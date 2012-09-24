@@ -1,4 +1,4 @@
 Asteroids
 =========
 
-[IET] XNA Astroids
+XNA Astroids
