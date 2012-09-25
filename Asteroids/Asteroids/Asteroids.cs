@@ -14,14 +14,18 @@ namespace Asteroids
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Asteroids : Microsoft.Xna.Framework.Game
     {
+        private Game.Config gameConfig;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public Game1()
+        public Asteroids()
         {
             graphics = new GraphicsDeviceManager(this);
+            
+
             Content.RootDirectory = "Content";
         }
 
@@ -32,8 +36,14 @@ namespace Asteroids
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
+        {            
+            // Load Game Configuration
+            gameConfig = Content.Load<Game.Config>("config");
+
+            graphics.IsFullScreen = gameConfig.IsFullScreen;
+            graphics.PreferredBackBufferWidth  = gameConfig.ScreenWidth;
+            graphics.PreferredBackBufferHeight = gameConfig.ScreenHeight;
+            graphics.ApplyChanges();
 
             base.Initialize();
         }

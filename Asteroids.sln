@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asteroids", "Asteroids\Asteroids\Asteroids.csproj", "{CCFE0286-01A8-4811-8269-055B7C4095D2}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "AsteroidsContent", "Asteroids\AsteroidsContent\AsteroidsContent.contentproj", "{26CA8B38-EA83-4E6D-A29C-B987A46BBD66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsteroidsContent", "Asteroids\AsteroidsContent\AsteroidsContent.contentproj", "{26CA8B38-EA83-4E6D-A29C-B987A46BBD66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "Game\Game.csproj", "{AC20D854-CBEE-4D81-9102-934CDE5B17B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +19,10 @@ Global
 		{CCFE0286-01A8-4811-8269-055B7C4095D2}.Release|x86.Build.0 = Release|x86
 		{26CA8B38-EA83-4E6D-A29C-B987A46BBD66}.Debug|x86.ActiveCfg = Debug|x86
 		{26CA8B38-EA83-4E6D-A29C-B987A46BBD66}.Release|x86.ActiveCfg = Release|x86
+		{AC20D854-CBEE-4D81-9102-934CDE5B17B8}.Debug|x86.ActiveCfg = Debug|x86
+		{AC20D854-CBEE-4D81-9102-934CDE5B17B8}.Debug|x86.Build.0 = Debug|x86
+		{AC20D854-CBEE-4D81-9102-934CDE5B17B8}.Release|x86.ActiveCfg = Release|x86
+		{AC20D854-CBEE-4D81-9102-934CDE5B17B8}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

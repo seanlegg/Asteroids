@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <Asset Type="Game.Config">
+    <ScreenWidth>1280</ScreenWidth>
+    <ScreenHeight>720</ScreenHeight>
+    <IsFullScreen>false</IsFullScreen>
+  </Asset>
+</XnaContent>
