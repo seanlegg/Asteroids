@@ -16,16 +16,23 @@ namespace Asteroids
     /// </summary>
     public class Asteroids : Microsoft.Xna.Framework.Game
     {
+        // Game Configuration
         private Game.Config gameConfig;
+
+        // Screens
+        Screen currentScreen;
+
+        SplashScreen splashScreen;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+
 
         public Asteroids()
         {
             graphics = new GraphicsDeviceManager(this);
             
-
             Content.RootDirectory = "Content";
         }
 
@@ -57,7 +64,11 @@ namespace Asteroids
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // Screens
+            splashScreen = new SplashScreen(this.Content, new EventHandler(ScreenEvent));
+
+            // Set the currently active screen
+            currentScreen = splashScreen;
         }
 
         /// <summary>
@@ -77,10 +88,11 @@ namespace Asteroids
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            // TODO: Add your update logic here
+            // Update the current screen
+            currentScreen.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -91,11 +103,16 @@ namespace Asteroids
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            currentScreen.Draw(null);
 
             base.Draw(gameTime);
+        }
+
+        public void ScreenEvent(object obj, EventArgs e)
+        {
+            Console.WriteLine("ScreenEvent Triggered");
         }
     }
 }
