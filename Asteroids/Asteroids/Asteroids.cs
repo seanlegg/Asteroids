@@ -22,6 +22,7 @@ namespace Asteroids
         // Screens
         Screen currentScreen;
 
+        Game game;
         SplashScreen splashScreen;
         MainMenuScreen menuScreen;
 
@@ -67,12 +68,11 @@ namespace Asteroids
             EventHandler eventHandler = new EventHandler(ScreenEvent);
 
             splashScreen = new SplashScreen(this.Content, eventHandler);
-            menuScreen   = new MainMenuScreen(this.Content, eventHandler); 
-            // Settings
-            // Game
+            menuScreen   = new MainMenuScreen(this.Content, eventHandler);
+            game = new Game(this.Content, eventHandler);
 
             // Set the currently active screen
-            currentScreen = splashScreen;
+            currentScreen = game;
         }
 
         /// <summary>
