@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-namespace Game
+namespace Asteroids
 {
     /*
      * See: http://msdn.microsoft.com/en-us/library/ff604978.aspx and http://msdn.microsoft.com/en-us/library/ff604979.aspx

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <XnaContent>
-  <Asset Type="Game.Config">
+  <Asset Type="Asteroids.Config">
     <ScreenWidth>1280</ScreenWidth>
     <ScreenHeight>720</ScreenHeight>
     <IsFullScreen>false</IsFullScreen>

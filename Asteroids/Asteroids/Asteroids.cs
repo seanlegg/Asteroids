@@ -17,17 +17,16 @@ namespace Asteroids
     public class Asteroids : Microsoft.Xna.Framework.Game
     {
         // Game Configuration
-        private Game.Config gameConfig;
+        private Config gameConfig;
 
         // Screens
         Screen currentScreen;
 
         SplashScreen splashScreen;
+        MainMenuScreen menuScreen;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
-
 
         public Asteroids()
         {
@@ -45,7 +44,7 @@ namespace Asteroids
         protected override void Initialize()
         {            
             // Load Game Configuration
-            gameConfig = Content.Load<Game.Config>("config");
+            gameConfig = Content.Load<Config>("config");
 
             graphics.IsFullScreen = gameConfig.IsFullScreen;
             graphics.PreferredBackBufferWidth  = gameConfig.ScreenWidth;
@@ -65,7 +64,12 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Screens
-            splashScreen = new SplashScreen(this.Content, new EventHandler(ScreenEvent));
+            EventHandler eventHandler = new EventHandler(ScreenEvent);
+
+            splashScreen = new SplashScreen(this.Content, eventHandler);
+            menuScreen   = new MainMenuScreen(this.Content, eventHandler); 
+            // Settings
+            // Game
 
             // Set the currently active screen
             currentScreen = splashScreen;
@@ -105,7 +109,7 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.Black);
 
-            currentScreen.Draw(null);
+            currentScreen.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }
@@ -113,6 +117,9 @@ namespace Asteroids
         public void ScreenEvent(object obj, EventArgs e)
         {
             Console.WriteLine("ScreenEvent Triggered");
+
+            // Change the currently active screen
+            currentScreen = menuScreen;
         }
     }
 }
