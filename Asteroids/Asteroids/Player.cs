@@ -9,24 +9,56 @@ namespace Asteroids
     class Player : Renderable
     {
         private Texture2D ship;
-
+        
+        private Vector2 origin;
         private Vector2 position;
-        private Vector2 direction;
+        private Vector2 velocity;
+
+        private float   speed;
+        private float   rotation;
+
+        private const float drag = 0.005f;
+        private const float rotationSpeed = 0.125f;
 
         public Player(ContentManager content)
         {
             ship = content.Load<Texture2D>("sprite/ship");
 
-            position  = new Vector2((Asteroids.gameConfig.ScreenWidth / 2) - (ship.Width / 2), (Asteroids.gameConfig.ScreenHeight / 2) - (ship.Height / 2));
-            direction = Vector2.Zero;
+            position = new Vector2((Asteroids.gameConfig.ScreenWidth / 2) - (ship.Width / 2), (Asteroids.gameConfig.ScreenHeight / 2) - (ship.Height / 2));
+            velocity = Vector2.Zero;
+            origin   = new Vector2(ship.Width / 2, ship.Height / 2);
+
+            rotation = 0.0f;
+            speed    = 5.0f;
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
-        {            
+        {
+            float dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
             // User Input
-            UserInput();        
+            UserInput(dt);   
+     
+            // Update Position
+            position += velocity;
 
             // Screen Wrap
+            WrapUniverse();
+
+            base.Update(gameTime);
+        }
+
+        public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+        {
+            spriteBatch.Begin();
+            spriteBatch.Draw(ship, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+            spriteBatch.End();
+
+            base.Draw(spriteBatch);
+        }
+
+        public void WrapUniverse()
+        {
             if (position.X + ship.Width < 0)
             {
                 position.X = Asteroids.gameConfig.ScreenWidth;
@@ -44,38 +76,31 @@ namespace Asteroids
             {
                 position.Y = -ship.Height;
             }
-            base.Update(gameTime);
         }
 
-        public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
-        {
-            spriteBatch.Begin();
-            spriteBatch.Draw(ship, new Rectangle((int)position.X, (int)position.Y, ship.Width, ship.Height), Color.White);
-            spriteBatch.End();
-
-            base.Draw(spriteBatch);
-        }
-
-        public void UserInput()
+        public void UserInput(float dt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up) == true)
             {
-                position.Y -= 3.0f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Down) == true)
-            {
-                position.Y += 3.0f;
+                velocity += new Vector2(
+                     (float) Math.Sin(rotation) * speed * dt,
+                    -(float) Math.Cos(rotation) * speed * dt
+                );
+                velocity.X = MathHelper.Clamp(velocity.X, -speed, speed);
+                velocity.Y = MathHelper.Clamp(velocity.Y, -speed, speed);
+            } else {
+                velocity.X *= (1.0f - drag);
+                velocity.Y *= (1.0f - drag);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left) == true)
             {
-                position.X -= 3.0f;
+                rotation -= rotationSpeed;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Right) == true)
             {
-                position.X += 3.0f;
+                rotation += rotationSpeed;
             }
         }
         
