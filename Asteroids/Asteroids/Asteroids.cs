@@ -17,7 +17,7 @@ namespace Asteroids
     public class Asteroids : Microsoft.Xna.Framework.Game
     {
         // Game Configuration
-        private Config gameConfig;
+        public static Config gameConfig;
 
         // Screens
         Screen currentScreen;
