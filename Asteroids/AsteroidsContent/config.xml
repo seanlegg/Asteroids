@@ -4,5 +4,6 @@
     <ScreenWidth>1280</ScreenWidth>
     <ScreenHeight>720</ScreenHeight>
     <IsFullScreen>false</IsFullScreen>
+    <PreferMultiSampling>true</PreferMultiSampling>
   </Asset>
 </XnaContent>

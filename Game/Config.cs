@@ -19,5 +19,6 @@ namespace Asteroids
         public int ScreenWidth;
         public int ScreenHeight;
         public bool IsFullScreen;
+        public bool PreferMultiSampling;
     }
 }

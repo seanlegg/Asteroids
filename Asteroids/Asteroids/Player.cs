@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,13 +10,15 @@ namespace Asteroids
     class Player : Renderable
     {
         private Texture2D ship;
+
+        private List<Bullet> bullets;
         
         private Vector2 origin;
         private Vector2 position;
         private Vector2 velocity;
 
-        private float   speed;
-        private float   rotation;
+        private float speed;
+        private float rotation;
 
         private const float drag = 0.005f;
         private const float rotationSpeed = 0.125f;
@@ -23,6 +26,8 @@ namespace Asteroids
         public Player(ContentManager content)
         {
             ship = content.Load<Texture2D>("sprite/ship");
+
+            bullets = new List<Bullet>();
 
             position = new Vector2((Asteroids.gameConfig.ScreenWidth / 2) - (ship.Width / 2), (Asteroids.gameConfig.ScreenHeight / 2) - (ship.Height / 2));
             velocity = Vector2.Zero;
@@ -36,13 +41,13 @@ namespace Asteroids
         {
             float dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            // User Input
+            // Process user input
             UserInput(dt);   
      
-            // Update Position
+            // Update the position of the ship
             position += velocity;
 
-            // Screen Wrap
+            // Wrap the screen
             WrapUniverse();
 
             base.Update(gameTime);
@@ -53,6 +58,11 @@ namespace Asteroids
             spriteBatch.Begin();
             spriteBatch.Draw(ship, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
             spriteBatch.End();
+
+            bullets.ForEach(delegate(Bullet b)
+            {
+                b.Draw(spriteBatch);
+            });
 
             base.Draw(spriteBatch);
         }
@@ -86,8 +96,6 @@ namespace Asteroids
                      (float) Math.Sin(rotation) * speed * dt,
                     -(float) Math.Cos(rotation) * speed * dt
                 );
-                velocity.X = MathHelper.Clamp(velocity.X, -speed, speed);
-                velocity.Y = MathHelper.Clamp(velocity.Y, -speed, speed);
             } else {
                 velocity.X *= (1.0f - drag);
                 velocity.Y *= (1.0f - drag);
@@ -102,7 +110,18 @@ namespace Asteroids
             {
                 rotation += rotationSpeed;
             }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            {
+                fireBullet();
+            }
         }
-        
+
+        public void fireBullet()
+        {
+            Bullet b = new Bullet();
+
+            bullets.Add(b);
+        }
     }
 }

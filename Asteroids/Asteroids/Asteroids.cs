@@ -18,6 +18,9 @@ namespace Asteroids
     {
         // Game Configuration
         public static Config gameConfig;
+        public static GraphicsDeviceManager graphics;
+
+        SpriteBatch spriteBatch;
 
         // Screens
         Screen currentScreen;
@@ -26,8 +29,7 @@ namespace Asteroids
         SplashScreen splashScreen;
         MainMenuScreen menuScreen;
 
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+
 
         public Asteroids()
         {
@@ -50,6 +52,8 @@ namespace Asteroids
             graphics.IsFullScreen = gameConfig.IsFullScreen;
             graphics.PreferredBackBufferWidth  = gameConfig.ScreenWidth;
             graphics.PreferredBackBufferHeight = gameConfig.ScreenHeight;
+            graphics.PreferMultiSampling = gameConfig.PreferMultiSampling;
+
             graphics.ApplyChanges();
 
             base.Initialize();
