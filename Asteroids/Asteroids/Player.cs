@@ -9,10 +9,13 @@ namespace Asteroids
 {
     class Player : Renderable
     {
+        private ContentManager content;
         private Texture2D ship;
 
         private List<Bullet> bullets;
-        
+
+        private KeyboardState prevKeyboardState;
+
         private Vector2 origin;
         private Vector2 position;
         private Vector2 velocity;
@@ -35,6 +38,8 @@ namespace Asteroids
 
             rotation = 0.0f;
             speed    = 5.0f;
+
+            this.content = content;
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -47,8 +52,21 @@ namespace Asteroids
             // Update the position of the ship
             position += velocity;
 
+            // Update the bullets
+            bullets.ForEach(delegate(Bullet b)
+            {
+                b.Update(gameTime);
+
+                if (b.isActive == false)
+                {
+                    bullets.Remove(b);
+                }
+            });
+
             // Wrap the screen
-            WrapUniverse();
+            position = Game.wrapUniverse(position, ship.Width, ship.Height);
+
+            prevKeyboardState = Keyboard.GetState();
 
             base.Update(gameTime);
         }
@@ -65,32 +83,11 @@ namespace Asteroids
             });
 
             base.Draw(spriteBatch);
-        }
-
-        public void WrapUniverse()
-        {
-            if (position.X + ship.Width < 0)
-            {
-                position.X = Asteroids.gameConfig.ScreenWidth;
-            }
-            else if (position.X > Asteroids.gameConfig.ScreenWidth)
-            {
-                position.X = -ship.Width;
-            }
-
-            if (position.Y + ship.Height < 0)
-            {
-                position.Y = Asteroids.gameConfig.ScreenHeight;
-            }
-            else if (position.Y > Asteroids.gameConfig.ScreenHeight)
-            {
-                position.Y = -ship.Height;
-            }
-        }
+        }   
 
         public void UserInput(float dt)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) == true)
+            if (Keyboard.GetState().IsKeyDown((Keys)Enum.Parse(typeof(Keys), Asteroids.gameConfig.Keyboard.Thrust, true)) == true)
             {
                 velocity += new Vector2(
                      (float) Math.Sin(rotation) * speed * dt,
@@ -111,17 +108,15 @@ namespace Asteroids
                 rotation += rotationSpeed;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true && prevKeyboardState.IsKeyDown(Keys.Space) == false)
             {
-                fireBullet();
+                fire();
             }
         }
 
-        public void fireBullet()
+        public void fire()
         {
-            Bullet b = new Bullet();
-
-            bullets.Add(b);
+            bullets.Add(new Bullet(content, position, rotation));
         }
     }
 }

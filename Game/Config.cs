@@ -20,5 +20,26 @@ namespace Asteroids
         public int ScreenHeight;
         public bool IsFullScreen;
         public bool PreferMultiSampling;
+
+        public KeyboardControls Keyboard = new KeyboardControls();
+        public GamepadControls  GamePad  = new GamepadControls();
+    }
+
+    public class ControlScheme 
+    {
+        public String Thrust;
+        public String Left;
+        public String Right;
+        public String Action;  
+    }
+
+    public class KeyboardControls : ControlScheme
+    {
+
+    }
+
+    public class GamepadControls : ControlScheme
+    {
+
     }
 }

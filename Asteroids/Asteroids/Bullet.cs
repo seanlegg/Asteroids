@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
@@ -7,11 +9,18 @@ namespace Asteroids
     {
         Texture2D bulletTexture;
 
-        public Bullet()
+        public Bullet(ContentManager content, Vector2 position, float rotation)
         {
-            isActive   = true;
-            timeToLive = 5;
-            bulletTexture = new Texture2D(Asteroids.graphics.GraphicsDevice, 1, 1);
+            isActive      = true;
+            timeToLive    = 1.5f;
+            speed = 8;
+            bulletTexture = content.Load<Texture2D>("sprite/bullet");
+
+            this.position = position;
+            this.velocity = new Vector2(
+                 (float)Math.Sin(rotation) * speed,
+                -(float)Math.Cos(rotation) * speed   
+            );
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -23,6 +32,10 @@ namespace Asteroids
             {
                 isActive = false;
             }
+            position += velocity;
+
+            position = Game.wrapUniverse(position, bulletTexture.Width, bulletTexture.Height);
+
             base.Update(gameTime);
         }
 
@@ -31,7 +44,7 @@ namespace Asteroids
             if (isActive == false) return;
 
             spriteBatch.Begin();
-            spriteBatch.Draw(bulletTexture, new Rectangle(10, 10, 8, 8), Color.White);
+            spriteBatch.Draw(bulletTexture, position, Color.White);
             spriteBatch.End();
 
             base.Draw(spriteBatch);
