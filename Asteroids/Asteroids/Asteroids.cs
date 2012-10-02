@@ -33,7 +33,7 @@ namespace Asteroids
         public Asteroids()
         {
             graphics = new GraphicsDeviceManager(this);
-            
+                        
             Content.RootDirectory = "Content";
         }
 

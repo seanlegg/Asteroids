@@ -9,8 +9,8 @@ namespace Asteroids
 {
     class Player : Renderable
     {
-        private ContentManager content;
-        private Texture2D ship;
+        private Texture2D ship_texture;
+        private Texture2D bullet_texture;
 
         private List<Bullet> bullets;
 
@@ -28,18 +28,17 @@ namespace Asteroids
 
         public Player(ContentManager content)
         {
-            ship = content.Load<Texture2D>("sprite/ship");
+            ship_texture   = content.Load<Texture2D>("sprite/ship");
+            bullet_texture = content.Load<Texture2D>("sprite/bullet");
 
             bullets = new List<Bullet>();
 
-            position = new Vector2((Asteroids.gameConfig.ScreenWidth / 2) - (ship.Width / 2), (Asteroids.gameConfig.ScreenHeight / 2) - (ship.Height / 2));
+            position = new Vector2((Asteroids.gameConfig.ScreenWidth / 2) - (ship_texture.Width / 2), (Asteroids.gameConfig.ScreenHeight / 2) - (ship_texture.Height / 2));
             velocity = Vector2.Zero;
-            origin   = new Vector2(ship.Width / 2, ship.Height / 2);
+            origin = new Vector2(ship_texture.Width / 2, ship_texture.Height / 2);
 
             rotation = 0.0f;
             speed    = 5.0f;
-
-            this.content = content;
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -64,7 +63,7 @@ namespace Asteroids
             });
 
             // Wrap the screen
-            position = Game.wrapUniverse(position, ship.Width, ship.Height);
+            position = Game.wrapUniverse(position, ship_texture.Width, ship_texture.Height);
 
             prevKeyboardState = Keyboard.GetState();
 
@@ -73,14 +72,16 @@ namespace Asteroids
 
         public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
-            spriteBatch.Draw(ship, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
-            spriteBatch.End();
-
+            // Render the player's bullets
             bullets.ForEach(delegate(Bullet b)
             {
                 b.Draw(spriteBatch);
             });
+
+            // Render the player's ship
+            spriteBatch.Begin();
+            spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+            spriteBatch.End();
 
             base.Draw(spriteBatch);
         }   
@@ -93,6 +94,8 @@ namespace Asteroids
                      (float) Math.Sin(rotation) * speed * dt,
                     -(float) Math.Cos(rotation) * speed * dt
                 );
+                velocity.X = MathHelper.Clamp(velocity.X, -speed, speed);
+                velocity.Y = MathHelper.Clamp(velocity.Y, -speed, speed);
             } else {
                 velocity.X *= (1.0f - drag);
                 velocity.Y *= (1.0f - drag);
@@ -116,7 +119,17 @@ namespace Asteroids
 
         public void fire()
         {
-            bullets.Add(new Bullet(content, position, rotation));
+            bullets.Add(new Bullet(bullet_texture, this));
+        }
+
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+
+        public float Rotation
+        {
+            get { return rotation; }
         }
     }
 }

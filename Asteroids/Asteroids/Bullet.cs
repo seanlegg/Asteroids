@@ -7,19 +7,21 @@ namespace Asteroids
 {
     class Bullet : Projectile
     {
-        Texture2D bulletTexture;
+        private Texture2D bullet_texture;
 
-        public Bullet(ContentManager content, Vector2 position, float rotation)
+        public Bullet(Texture2D bullet_texture, Player owner)
         {
-            isActive      = true;
-            timeToLive    = 1.5f;
-            speed = 8;
-            bulletTexture = content.Load<Texture2D>("sprite/bullet");
+            isActive   = true;
+            timeToLive = 1.5f;
+            speed      = 8.0f;
 
-            this.position = position;
+            this.bullet_texture = bullet_texture;
+
+            this.owner    = owner;
+            this.position = owner.Position;
             this.velocity = new Vector2(
-                 (float)Math.Sin(rotation) * speed,
-                -(float)Math.Cos(rotation) * speed   
+                 (float)Math.Sin(owner.Rotation) * speed,
+                -(float)Math.Cos(owner.Rotation) * speed   
             );
         }
 
@@ -33,8 +35,7 @@ namespace Asteroids
                 isActive = false;
             }
             position += velocity;
-
-            position = Game.wrapUniverse(position, bulletTexture.Width, bulletTexture.Height);
+            position = Game.wrapUniverse(position, bullet_texture.Width, bullet_texture.Height);
 
             base.Update(gameTime);
         }
@@ -44,7 +45,7 @@ namespace Asteroids
             if (isActive == false) return;
 
             spriteBatch.Begin();
-            spriteBatch.Draw(bulletTexture, position, Color.White);
+            spriteBatch.Draw(bullet_texture, position, Color.White);
             spriteBatch.End();
 
             base.Draw(spriteBatch);
