@@ -7,21 +7,27 @@ namespace Asteroids
 {
     class Asteroid : Base
     {
+        public static float MAX_SPEED = 2.0f;
+
         private Texture2D texture;
 
         private Vector2 position;
         private Vector2 velocity;
+        private float speed = 1.5f;
 
-        public Asteroid(Texture2D texture)
+        public Asteroid(Texture2D texture, Vector2 position, Vector2 velocity)
         {
             this.texture  = texture;
-            this.position = Vector2.Zero;
-            this.velocity = Vector2.Zero;            
+            this.position = position;
+            this.velocity = velocity;            
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime dt)
         {
-            position += velocity;
+            position += velocity * speed;
+
+            // Wrap the screen
+            position = Helper.wrapUniverse(position, texture.Width, texture.Height);
 
             base.Update(dt);
         }

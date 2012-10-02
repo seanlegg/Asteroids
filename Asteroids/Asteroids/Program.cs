@@ -10,7 +10,7 @@ namespace Asteroids
         /// </summary>
         static void Main(string[] args)
         {
-            using (Asteroids game = new Asteroids())
+            using (AsteroidsGame game = new AsteroidsGame())
             {
                 game.Run();
             }

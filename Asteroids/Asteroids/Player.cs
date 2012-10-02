@@ -9,12 +9,10 @@ namespace Asteroids
 {
     class Player : Base
     {
+        private SpriteFont font;
+
         private Texture2D ship_texture;
         private Texture2D bullet_texture;
-#if DEBUG
-        private Texture2D ship_texture_debug;
-        private Texture2D bullet_texture_debug;
-#endif
 
         private List<Bullet> bullets;
 
@@ -27,23 +25,25 @@ namespace Asteroids
         private float speed;
         private float rotation;
 
+        private int lives = 3;
+        private int score = 0;
+
         private const float drag  = 0.005f;
         private const float brake = 0.025f;
         private const float rotationSpeed = 0.125f;
 
         public Player(ContentManager content)
         {
+            // Fonts
+            font = content.Load<SpriteFont>("font/Segoe");
+
+            // Textures
             ship_texture   = content.Load<Texture2D>("sprite/ship");
             bullet_texture = content.Load<Texture2D>("sprite/bullet");
 
-#if DEBUG
-            ship_texture_debug   = Render.CreateDebugTexture(ship_texture, Color.White);
-            bullet_texture_debug = Render.CreateDebugTexture(bullet_texture, Color.White);
-#endif
-
             bullets = new List<Bullet>();
 
-            position = new Vector2((Asteroids.gameConfig.ScreenWidth / 2) - (ship_texture.Width / 2), (Asteroids.gameConfig.ScreenHeight / 2) - (ship_texture.Height / 2));
+            position = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.config.ScreenHeight / 2) - (ship_texture.Height / 2));
             velocity = Vector2.Zero;
             origin = new Vector2(ship_texture.Width / 2, ship_texture.Height / 2);
 
@@ -53,17 +53,23 @@ namespace Asteroids
 
         public override void HandleCollision(Player p)
         {
-            Console.WriteLine(1);
+            // We have hit a player
+            lives -= 1;
         }
 
         public override void HandleCollision(Asteroid a)
         {
-            Console.WriteLine(1);
+            // We have hit an Asteroid
+            lives -= 1;
         }
 
         public override void HandleCollision(Bullet b)
         {
-            Console.WriteLine(1);
+            // Immunity to our own bullets
+            if (b.Owner.GetHashCode() == this.GetHashCode()) return;
+
+            // We've been hit by a bullet
+            lives -= 1;
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -103,14 +109,16 @@ namespace Asteroids
                 b.Draw(spriteBatch);
             });
 
-            // Render the player's ship
             spriteBatch.Begin();
-            spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
-#if DEBUG
-            spriteBatch.Draw(ship_texture_debug, position, null, Color.Red, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
-#endif
-            spriteBatch.End();
+            {
+                // Render the player's ship
+                spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
 
+                // Render the HUD
+                spriteBatch.DrawString(font, "Score: " + score, new Vector2(0, 0), Color.Green);
+            }
+            spriteBatch.End();
+          
             base.Draw(spriteBatch);
         }   
 
@@ -155,11 +163,7 @@ namespace Asteroids
 
         public void fire()
         {
-#if DEBUG
-            bullets.Add(new Bullet(bullet_texture, bullet_texture_debug, this));
-#else
             bullets.Add(new Bullet(bullet_texture, this));
-#endif
         }
 
         public List<Bullet> Bullets

@@ -21,9 +21,28 @@ namespace Asteroids
             texture_medium = content.Load<Texture2D>("sprite/asteroid_medium");
             texture_large  = content.Load<Texture2D>("sprite/asteroid_large");
 
+            Init();
+        }
+
+        public void Init()
+        {
+            Random rand = new Random();
+
+            int w = AsteroidsGame.config.ScreenWidth;
+            int h = AsteroidsGame.config.ScreenHeight;
+            int n = 1000;
+
             //asteroids.Add(new Asteroid(texture_small));
             //asteroids.Add(new Asteroid(texture_medium));
-            asteroids.Add(new Asteroid(texture_large));
+            //asteroids.Add(new Asteroid(texture_large));
+
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
+                Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
+
+                asteroids.Add(new Asteroid(texture_large, position, velocity));
+            }
         }
 
         public override void Update(GameTime dt)

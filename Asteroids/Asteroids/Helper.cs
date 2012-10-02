@@ -10,18 +10,18 @@ namespace Asteroids
         {
             if (position.X + textureWidth < 0)
             {
-                position.X = Asteroids.gameConfig.ScreenWidth;
+                position.X = AsteroidsGame.config.ScreenWidth;
             }
-            else if (position.X > Asteroids.gameConfig.ScreenWidth)
+            else if (position.X > AsteroidsGame.config.ScreenWidth)
             {
                 position.X = -textureWidth;
             }
 
             if (position.Y + textureHeight < 0)
             {
-                position.Y = Asteroids.gameConfig.ScreenHeight;
+                position.Y = AsteroidsGame.config.ScreenHeight;
             }
-            else if (position.Y > Asteroids.gameConfig.ScreenHeight)
+            else if (position.Y > AsteroidsGame.config.ScreenHeight)
             {
                 position.Y = -textureHeight;
             }

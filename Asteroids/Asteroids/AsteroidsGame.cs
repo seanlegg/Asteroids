@@ -14,10 +14,10 @@ namespace Asteroids
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Asteroids : Microsoft.Xna.Framework.Game
+    public class AsteroidsGame : Microsoft.Xna.Framework.Game
     {
         // Game Configuration
-        public static Config gameConfig;
+        public static Config config;
         public static GraphicsDeviceManager graphics;
 
         SpriteBatch spriteBatch;
@@ -29,7 +29,7 @@ namespace Asteroids
         SplashScreen splashScreen;
         MainMenuScreen menuScreen;
 
-        public Asteroids()
+        public AsteroidsGame()
         {
             graphics = new GraphicsDeviceManager(this);
                         
@@ -45,12 +45,12 @@ namespace Asteroids
         protected override void Initialize()
         {            
             // Load Game Configuration
-            gameConfig = Content.Load<Config>("config");
+            config = Content.Load<Config>("config");
 
-            graphics.IsFullScreen = gameConfig.IsFullScreen;
-            graphics.PreferredBackBufferWidth  = gameConfig.ScreenWidth;
-            graphics.PreferredBackBufferHeight = gameConfig.ScreenHeight;
-            graphics.PreferMultiSampling = gameConfig.PreferMultiSampling;
+            graphics.IsFullScreen = config.IsFullScreen;
+            graphics.PreferredBackBufferWidth = config.ScreenWidth;
+            graphics.PreferredBackBufferHeight = config.ScreenHeight;
+            graphics.PreferMultiSampling = config.PreferMultiSampling;
 
             graphics.ApplyChanges();
 

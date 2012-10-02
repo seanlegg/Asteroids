@@ -9,22 +9,13 @@ namespace Asteroids
     {
         private Texture2D bullet_texture;
 
-#if DEBUG
-        private Texture2D bullet_texture_debug;
-
-        public Bullet(Texture2D bullet_texture, Texture2D debug_texture, Player owner)
-#else
         public Bullet(Texture2D bullet_texture, Player owner)
-#endif
         {
             isActive   = true;
             timeToLive = 1.5f;
             speed      = 8.0f;
 
             this.bullet_texture = bullet_texture;
-#if DEBUG
-            this.bullet_texture_debug = debug_texture;
-#endif
 
             this.owner    = owner;
             this.position = owner.Position;
@@ -55,12 +46,14 @@ namespace Asteroids
 
             spriteBatch.Begin();
             spriteBatch.Draw(bullet_texture, position, Color.White);
-#if DEBUG
-            spriteBatch.Draw(bullet_texture_debug, position, Color.Red);
-#endif
             spriteBatch.End();
 
             base.Draw(spriteBatch);
+        }
+
+        public Player Owner
+        {
+            get { return this.owner; }
         }
     }
 }

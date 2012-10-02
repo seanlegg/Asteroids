@@ -12,20 +12,35 @@ namespace Asteroids
 
         private DebugDraw()
         {
-            pixel = new Texture2D(Asteroids.graphics.GraphicsDevice, 1, 1);
+            pixel = new Texture2D(AsteroidsGame.graphics.GraphicsDevice, 1, 1);
             pixel.SetData(new Color[] { Color.White });
 
-            transparent = new Texture2D(Asteroids.graphics.GraphicsDevice, 1, 1);
+            transparent = new Texture2D(AsteroidsGame.graphics.GraphicsDevice, 1, 1);
             transparent.SetData(new Color[] { Color.Transparent });
         }
 
-        public void drawBoundingRect(SpriteBatch spriteBatch, Rectangle rect, float angle, Color color)
+        public static Texture2D CreateDebugTexture(Texture2D texture, Color c)
         {
-            spriteBatch.Begin();
-            //spriteBatch.Draw(pixel, rect, color);
-            //spriteBatch.Draw(transparent, new Rectangle(rect.X+1, rect.Y+1, rect.X+rect.Width-1, rect.Y+rect.Height-1), Color.Red);
-            spriteBatch.End();
+            int w = texture.Width;
+            int h = texture.Height;
 
+            Texture2D result = new Texture2D(AsteroidsGame.graphics.GraphicsDevice, w, h);
+            Color[] tex = new Color[w * h];
+
+            for (int i = 0; i < texture.Width; i++)
+            {
+                tex[i] = c;
+                tex[(w * (h - 1)) + i] = c;
+            }
+
+            for (int j = 0; j < texture.Height; j++)
+            {
+                tex[(j * w)] = c;
+                tex[(j * w) + (w - 1)] = c;
+            }
+            result.SetData(tex);
+
+            return result;
         }
 
         public static DebugDraw Instance
