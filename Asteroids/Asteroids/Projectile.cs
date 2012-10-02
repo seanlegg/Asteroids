@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class Projectile
+    class Projectile : Base
     {
         protected Player owner;
 
@@ -13,8 +13,5 @@ namespace Asteroids
         protected float speed;
 
         public bool isActive = true;
-
-        public virtual void Update (GameTime gameTime)       { }
-        public virtual void Draw   (SpriteBatch spriteBatch) { }
     }
 }

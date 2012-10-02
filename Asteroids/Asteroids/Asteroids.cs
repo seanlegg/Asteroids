@@ -18,8 +18,8 @@ namespace Asteroids
     {
         // Game Configuration
         public static Config gameConfig;
-        
-        GraphicsDeviceManager graphics;
+        public static GraphicsDeviceManager graphics;
+
         SpriteBatch spriteBatch;
 
         // Screens
@@ -28,7 +28,6 @@ namespace Asteroids
         Game game;
         SplashScreen splashScreen;
         MainMenuScreen menuScreen;
-
 
         public Asteroids()
         {

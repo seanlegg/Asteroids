@@ -9,26 +9,34 @@ namespace Asteroids
 {
     class Game : Screen
     {
+        private AsteroidManager asteroidManager;
         private List<Player> players;
-        private KeyboardState previousKeyboardState;
+        private List<Asteroid> asteroids;
 
         public Game(ContentManager content, EventHandler screenEvent) : base(screenEvent)
         {
             players = new List<Player>();
-
             players.Add(new Player(content));
+
+            asteroidManager = new AsteroidManager(content);
+        }
+
+        public void Init()
+        {
+            // level = ...            
         }
 
         public override void Update(GameTime dt)
         {
-            // Keep track of the previous keyboard state
-            previousKeyboardState = Keyboard.GetState();
-
             // Update players
             players.ForEach(delegate(Player p)
             {
                 p.Update(dt);
             });
+
+            // Update Asteroids
+            asteroidManager.Update(dt);
+
             base.Update(dt);
         }
 
@@ -39,29 +47,41 @@ namespace Asteroids
             {
                 p.Draw(spriteBatch);
             });
+
+            // Render Asteroids
+            asteroidManager.Draw(spriteBatch);
+
             base.Draw(spriteBatch);           
         }
 
-        public static Vector2 wrapUniverse(Vector2 position, int textureWidth, int textureHeight)
+        // Bounding Box
+        public void CheckCollisions()
         {
-            if (position.X + textureWidth < 0)
-            {
-                position.X = Asteroids.gameConfig.ScreenWidth;
-            }
-            else if (position.X > Asteroids.gameConfig.ScreenWidth)
-            {
-                position.X = -textureWidth;
-            }
+            asteroidManager.Asteroids.ForEach(delegate(Asteroid a)
+            {                
+                players.ForEach(delegate(Player p)
+                {
+                    Vector2 p1 = a.Position;
+                    Vector2 p2 = p.Position;
 
-            if (position.Y + textureHeight < 0)
-            {
-                position.Y = Asteroids.gameConfig.ScreenHeight;
-            }
-            else if (position.Y > Asteroids.gameConfig.ScreenHeight)
-            {
-                position.Y = -textureHeight;
-            }
-            return position;
+                    // Check for collisions with players
+                    if ( (p1.X <= p2.X + p.Width && p1.X + a.Width >= p2.X) || (p2.X + a.Width >= p1.X && p1.X <= p2.X + p.Width) )
+                    {
+                        if (p1.Y <= p2.Y + p.Height && p1.Y + a.Height >= p2.Y)
+                        {
+                            a.HandleCollision(p); // Let the asteroids handle collisions with players
+                            p.HandleCollision(a); // Let the Players handle collisions with asteroids
+                        }
+                    }
+
+                    // Check for collisions with bullets
+                    p.Bullets.ForEach(delegate(Bullet b)
+                    {
+
+                    });
+                });                
+            });
         }
+
     }
 }
