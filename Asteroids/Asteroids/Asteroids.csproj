@@ -110,6 +110,8 @@
     <Compile Include="Asteroid.cs" />
     <Compile Include="AsteroidManager.cs" />
     <Compile Include="Bullet.cs" />
+    <Compile Include="Collidable.cs" />
+    <Compile Include="Collision.cs" />
     <Compile Include="DebugDraw.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Helper.cs" />

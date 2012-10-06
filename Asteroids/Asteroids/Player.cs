@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
-    class Player : Base
+    class Player : Collidable
     {
         private SpriteFont font;
 
@@ -32,6 +32,8 @@ namespace Asteroids
         private const float brake = 0.025f;
         private const float rotationSpeed = 0.125f;
 
+        private bool isCollision = false;
+
         public Player(ContentManager content)
         {
             // Fonts
@@ -55,12 +57,18 @@ namespace Asteroids
         {
             // We have hit a player
             lives -= 1;
+
+            
         }
 
         public override void HandleCollision(Asteroid a)
         {
             // We have hit an Asteroid
             lives -= 1;
+
+            isCollision = true;
+
+            Console.WriteLine("Collision Detected");
         }
 
         public override void HandleCollision(Bullet b)
@@ -98,6 +106,8 @@ namespace Asteroids
 
             prevKeyboardState = Keyboard.GetState();
 
+            isCollision = false;
+
             base.Update(gameTime);
         }
 
@@ -109,10 +119,17 @@ namespace Asteroids
                 b.Draw(spriteBatch);
             });
 
+            DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
+            circle.CreateCircle(GetRadius(), 100);
+            circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
+
             spriteBatch.Begin();
             {
                 // Render the player's ship
-                spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+                //spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+                spriteBatch.Draw(ship_texture, position, null, isCollision ? Color.Red : Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+
+                circle.Render(spriteBatch);
 
                 // Render the HUD
                 spriteBatch.DrawString(font, "Score: " + score, new Vector2(0, 0), Color.Green);
@@ -154,7 +171,7 @@ namespace Asteroids
                 rotation += rotationSpeed;
             }
 
-            // if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            //if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
             if (Keyboard.GetState().IsKeyDown(Keys.Space) == true && prevKeyboardState.IsKeyDown(Keys.Space) == false)
             {
                 fire();
@@ -166,6 +183,23 @@ namespace Asteroids
             bullets.Add(new Bullet(bullet_texture, this));
         }
 
+        /**
+         * Collision Detection Overrides
+         */
+        public override Vector3 GetPosition()
+        {
+            float xOffset = ship_texture.Width / 2;
+            float yOffset = ship_texture.Height / 2;
+
+            return new Vector3(position.X, position.Y, 0.0f);
+        }
+
+        public override int GetRadius()
+        {
+            return (ship_texture.Width > ship_texture.Height ? ship_texture.Width : ship_texture.Height) / 2;
+        }
+
+        /* Getters / Setters */
         public List<Bullet> Bullets
         {
             get { return bullets; }

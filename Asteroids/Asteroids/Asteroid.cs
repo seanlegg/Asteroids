@@ -5,10 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class Asteroid : Base
+    class Asteroid : Collidable
     {
-        public static float MAX_SPEED = 2.0f;
-
         private Texture2D texture;
 
         private Vector2 position;
@@ -24,7 +22,7 @@ namespace Asteroids
 
         public override void Update(Microsoft.Xna.Framework.GameTime dt)
         {
-            position += velocity * speed;
+            //position += velocity * speed;
 
             // Wrap the screen
             position = Helper.wrapUniverse(position, texture.Width, texture.Height);
@@ -34,16 +32,33 @@ namespace Asteroids
 
         public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
+            DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
+            circle.CreateCircle(GetRadius(), 100);
+            circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
+            circle.Colour = Color.Red;
+
             spriteBatch.Begin();
             spriteBatch.Draw(texture, position, Color.White);
+            circle.Render(spriteBatch);
             spriteBatch.End();
 
             base.Draw(spriteBatch);
         }
 
-        public Vector2 Position
+        /**
+         * Collision Detection Overrides
+         */
+        public override Vector3 GetPosition()
         {
-            get { return position; }
+            float xOffset = texture.Width  / 2;
+            float yOffset = texture.Height / 2;
+
+            return new Vector3(position.X + xOffset, position.Y + yOffset, 0.0f);
+        }
+
+        public override int GetRadius()
+        {
+            return (texture.Width > texture.Height ? texture.Width : texture.Height) / 2;
         }
 
         public int Width

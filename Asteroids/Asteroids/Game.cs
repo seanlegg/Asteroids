@@ -37,6 +37,8 @@ namespace Asteroids
             // Update Asteroids
             asteroidManager.Update(dt);
 
+            CheckCollisions();
+
             base.Update(dt);
         }
 
@@ -61,24 +63,16 @@ namespace Asteroids
             {                
                 players.ForEach(delegate(Player p)
                 {
-                    Vector2 p1 = a.Position;
-                    Vector2 p2 = p.Position;
-
-                    // Check for collisions with players
-                    if ( (p1.X <= p2.X + p.Width && p1.X + a.Width >= p2.X) || (p2.X + a.Width >= p1.X && p1.X <= p2.X + p.Width) )
+                    if (Collision.BoundingSphere(a, p) == true)
                     {
-                        if (p1.Y <= p2.Y + p.Height && p1.Y + a.Height >= p2.Y)
-                        {
-                            a.HandleCollision(p); // Let the asteroids handle collisions with players
-                            p.HandleCollision(a); // Let the Players handle collisions with asteroids
-                        }
+                        p.HandleCollision(a);
                     }
 
                     // Check for collisions with bullets
-                    p.Bullets.ForEach(delegate(Bullet b)
-                    {
+                    //p.Bullets.ForEach(delegate(Bullet b)
+                    //{
 
-                    });
+                    //});
                 });                
             });
         }

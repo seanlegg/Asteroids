@@ -51,6 +51,22 @@ namespace Asteroids
             base.Draw(spriteBatch);
         }
 
+        /**
+         * Collision Detection Overrides
+         */
+        public override Vector3 GetPosition()
+        {
+            float xOffset = bullet_texture.Width  / 2;
+            float yOffset = bullet_texture.Height / 2;
+
+            return new Vector3(position.X + xOffset, position.Y + yOffset, 0.0f);
+        }
+
+        public override int GetRadius()
+        {
+            return (bullet_texture.Width > bullet_texture.Height ? bullet_texture.Width : bullet_texture.Height) / 2;
+        }
+
         public Player Owner
         {
             get { return this.owner; }

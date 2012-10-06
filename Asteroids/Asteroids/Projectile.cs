@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class Projectile : Base
+    class Projectile : Collidable
     {
         protected Player owner;
 
