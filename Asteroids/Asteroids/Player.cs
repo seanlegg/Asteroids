@@ -32,6 +32,7 @@ namespace Asteroids
         private const float brake = 0.025f;
         private const float rotationSpeed = 0.125f;
 
+        private bool isAlive = true;
         private bool isCollision = false;
 
         public Player(ContentManager content)
@@ -53,22 +54,42 @@ namespace Asteroids
             speed    = 5.0f;
         }
 
+        public void Respawn()
+        {
+            isAlive = true;
+
+            velocity = Vector2.Zero;
+            position = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.config.ScreenHeight / 2) - (ship_texture.Height / 2));
+            rotation = 0.0f;
+        }
+
+        public void DecrementLives()
+        {
+            lives--;
+            if (lives <= 0)
+            {
+
+            }
+        }
+
         public override void HandleCollision(Player p)
         {
             // We have hit a player
             lives -= 1;
-
-            
         }
 
         public override void HandleCollision(Asteroid a)
         {
             // We have hit an Asteroid
-            lives -= 1;
+            if (isAlive)
+            {
+                DecrementLives();
+            }
+            isAlive = false;
 
             isCollision = true;
 
-            Console.WriteLine("Collision Detected");
+            Respawn();
         }
 
         public override void HandleCollision(Bullet b)
@@ -119,20 +140,20 @@ namespace Asteroids
                 b.Draw(spriteBatch);
             });
 
-            DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
-            circle.CreateCircle(GetRadius(), 100);
-            circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
+            //DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
+            //circle.CreateCircle(GetRadius(), 100);
+            //circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
 
             spriteBatch.Begin();
             {
                 // Render the player's ship
-                //spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
                 spriteBatch.Draw(ship_texture, position, null, isCollision ? Color.Red : Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
 
-                circle.Render(spriteBatch);
+                //circle.Render(spriteBatch);
 
                 // Render the HUD
-                spriteBatch.DrawString(font, "Score: " + score, new Vector2(0, 0), Color.Green);
+                spriteBatch.DrawString(font, "Lives: " + lives, new Vector2(0, 20), Color.Green);
+                spriteBatch.DrawString(font, "Score: " + score, new Vector2(0,  0), Color.Green);
             }
             spriteBatch.End();
           
@@ -171,8 +192,8 @@ namespace Asteroids
                 rotation += rotationSpeed;
             }
 
-            //if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true && prevKeyboardState.IsKeyDown(Keys.Space) == false)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            //if (Keyboard.GetState().IsKeyDown(Keys.Space) == true && prevKeyboardState.IsKeyDown(Keys.Space) == false)
             {
                 fire();
             }

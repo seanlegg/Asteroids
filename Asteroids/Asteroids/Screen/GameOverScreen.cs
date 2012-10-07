@@ -6,11 +6,22 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
-    class MainMenuScreen : GameScreen
+    class GameOverScreen : GameScreen
     {
+        
         private KeyboardState previousKeyboardState;
 
-        public MainMenuScreen(ContentManager content, EventHandler screenEvent) : base(screenEvent)
+        public GameOverScreen(ContentManager content, EventHandler screenEvent) : base(screenEvent)
+        {
+            
+        }
+
+        public void Init()
+        {
+            
+        }
+
+        public void Shutdown()
         {
 
         }
@@ -19,21 +30,20 @@ namespace Asteroids
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true && previousKeyboardState.IsKeyDown(Keys.Enter) == false)
             {
-                screenEvent.Invoke(this, null);
+                //screenEvent.Invoke(this, new ScreenEvent());
             }
+            
 
             // Keep track of the previous keyboard state
             previousKeyboardState = Keyboard.GetState();
-
-            base.Update(dt);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Draw(spriteBatch);
+            
         }
 
-        public static void onMainMenuEvent(object obj, EventArgs e)
+        public static void onGameOverEvent(object obj, EventArgs e)
         {
 
         }

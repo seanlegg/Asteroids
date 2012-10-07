@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
-    class Game : Screen
+    class Game : GameScreen
     {
         private AsteroidManager asteroidManager;
         private List<Player> players;
@@ -18,7 +18,7 @@ namespace Asteroids
             players = new List<Player>();
             players.Add(new Player(content));
 
-            asteroidManager = new AsteroidManager(content);
+            asteroidManager = new AsteroidManager(content, AsteroidManager.Mode.GAME);
         }
 
         public void Init()

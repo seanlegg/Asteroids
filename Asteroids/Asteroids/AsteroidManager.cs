@@ -13,7 +13,13 @@ namespace Asteroids
         private Texture2D texture_medium;
         private Texture2D texture_large;
 
-        public AsteroidManager(ContentManager content)
+        public enum Mode
+        {
+            TITLE,
+            GAME
+        }
+
+        public AsteroidManager(ContentManager content, Mode mode)
         {
             asteroids = new List<Asteroid>();
 
@@ -21,7 +27,14 @@ namespace Asteroids
             texture_medium = content.Load<Texture2D>("sprite/asteroid_medium");
             texture_large  = content.Load<Texture2D>("sprite/asteroid_large");
 
-            Init();
+            if (mode == Mode.TITLE)
+            {
+                InitTitle();
+            }
+            else
+            {
+                Init();
+            }
         }
 
         public void Init()
@@ -40,6 +53,23 @@ namespace Asteroids
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
+
+                asteroids.Add(new Asteroid(texture_large, position, velocity));
+            }
+        }
+
+        public void InitTitle()
+        {
+            Random rand = new Random();
+
+            int w = AsteroidsGame.config.ScreenWidth;
+            int h = AsteroidsGame.config.ScreenHeight;
+            int n = 1000;
+
+            for (int i = 0; i < 15; i++)
+            {
+                Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
+                Vector2 velocity = new Vector2((float)Math.Sin(rand.Next(0, n)), (float)Math.Cos(rand.Next(0, n)));
 
                 asteroids.Add(new Asteroid(texture_large, position, velocity));
             }

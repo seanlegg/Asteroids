@@ -64,7 +64,7 @@ namespace Asteroids
 
         public override int GetRadius()
         {
-            return (bullet_texture.Width > bullet_texture.Height ? bullet_texture.Width : bullet_texture.Height) / 2;
+            return (bullet_texture.Width > bullet_texture.Height ? bullet_texture.Width : bullet_texture.Height);
         }
 
         public Player Owner

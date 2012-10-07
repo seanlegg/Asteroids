@@ -7,23 +7,16 @@ namespace Asteroids
     /*
      * http://www.xnadevelopment.com/tutorials/thestateofthings/thestateofthings.shtml
      */
-    class Screen
+    class GameScreen
     {
         protected EventHandler screenEvent;
 
-        public Screen(EventHandler screenEvent)
+        public GameScreen(EventHandler screenEvent)
         {
             this.screenEvent = screenEvent;
         }
 
-        public virtual void Update(GameTime dt)
-        {
-
-        }
-
-        public virtual void Draw(SpriteBatch spriteBatch)
-        {
-
-        }
+        public virtual void Update (GameTime dt)             { }
+        public virtual void Draw   (SpriteBatch spriteBatch) { }
     }
 }

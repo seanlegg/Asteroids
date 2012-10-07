@@ -23,11 +23,12 @@ namespace Asteroids
         SpriteBatch spriteBatch;
 
         // Screens
-        Screen currentScreen;
+        GameScreen currentScreen;
 
         Game game;
-        SplashScreen splashScreen;
+        SplashScreen   splashScreen;
         MainMenuScreen menuScreen;
+        GameOverScreen gameOverScreen;
 
         public AsteroidsGame()
         {
@@ -67,14 +68,15 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Screens
-            EventHandler eventHandler = new EventHandler(ScreenEvent);
+            splashScreen   = new SplashScreen   (this.Content, new EventHandler(SplashScreen.onSplashScreenEvent));
+            menuScreen     = new MainMenuScreen (this.Content, new EventHandler(MainMenuScreen.onMainMenuEvent));
+            gameOverScreen = new GameOverScreen (this.Content, new EventHandler(GameOverScreen.onGameOverEvent));
 
-            splashScreen = new SplashScreen(this.Content, eventHandler);
-            menuScreen   = new MainMenuScreen(this.Content, eventHandler);
-            game = new Game(this.Content, eventHandler);
+            game = new Game(this.Content, null);
 
             // Set the currently active screen
-            currentScreen = game;
+            //currentScreen = game;
+            currentScreen = splashScreen;
         }
 
         /// <summary>
@@ -114,14 +116,6 @@ namespace Asteroids
             currentScreen.Draw(spriteBatch);
 
             base.Draw(gameTime);
-        }
-
-        public void ScreenEvent(object obj, EventArgs e)
-        {
-            Console.WriteLine("ScreenEvent Triggered");
-
-            // Change the currently active screen
-            currentScreen = menuScreen;
         }
     }
 }

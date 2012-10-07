@@ -4,12 +4,7 @@ namespace Asteroids
 {
     class Collision
     {
-        public static bool AABB(Collidable a, Collidable b)
-        {
-            return false;
-        }
-
-        public static bool OBB(Collidable a, Collidable b)
+        public static bool IntersectPixels(Collidable a, Collidable b)
         {
             return false;
         }
@@ -20,11 +15,6 @@ namespace Asteroids
             BoundingSphere objB = new BoundingSphere(b.GetPosition(), b.GetRadius());
 
             return objA.Intersects(objB);
-        }
-
-        public static bool Intersects(Collidable a, Collidable b)
-        {
-            return false;
         }
     }
 }

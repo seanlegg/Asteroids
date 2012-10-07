@@ -17,12 +17,12 @@ namespace Asteroids
         {
             this.texture  = texture;
             this.position = position;
-            this.velocity = velocity;            
+            this.velocity = velocity;
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime dt)
         {
-            //position += velocity * speed;
+            position += velocity * speed;
 
             // Wrap the screen
             position = Helper.wrapUniverse(position, texture.Width, texture.Height);
@@ -32,14 +32,14 @@ namespace Asteroids
 
         public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
-            DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
-            circle.CreateCircle(GetRadius(), 100);
-            circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
-            circle.Colour = Color.Red;
+            //DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
+            //circle.CreateCircle(GetRadius(), 100);
+            //circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
+            //circle.Colour = Color.Red;
 
             spriteBatch.Begin();
             spriteBatch.Draw(texture, position, Color.White);
-            circle.Render(spriteBatch);
+            //circle.Render(spriteBatch);
             spriteBatch.End();
 
             base.Draw(spriteBatch);

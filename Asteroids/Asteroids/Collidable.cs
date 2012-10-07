@@ -5,10 +5,10 @@ namespace Asteroids
 {
     class Collidable : Base
     {
-        protected float boundingSphereRadius = 0.0f;
+        //protected BoundingSphere boundingSphere;
 
-        public virtual Vector3   GetPosition()  { return Vector3.Zero; }
-        public virtual int       GetRadius()    { return 0; }
+        public virtual Vector3 GetPosition()       { return Vector3.Zero; }
+        public virtual int     GetRadius()         { return 0; }
 
         public virtual void HandleCollision(Asteroid a) { }
         public virtual void HandleCollision(Player p)   { }

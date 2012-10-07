@@ -113,6 +113,7 @@
     <Compile Include="Collidable.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="DebugDraw.cs" />
+    <Compile Include="EventManager.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Player.cs" />
@@ -121,9 +122,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="AsteroidsGame.cs" />
     <Compile Include="Base.cs" />
+    <Compile Include="Screen\GameOverScreen.cs" />
     <Compile Include="Screen\MainMenuScreen.cs" />
-    <Compile Include="Screen\Screen.cs" />
-    <Compile Include="Screen\ScreenEvent.cs" />
+    <Compile Include="Screen\GameScreen.cs" />
     <Compile Include="Screen\SplashScreen.cs" />
   </ItemGroup>
   <ItemGroup>
