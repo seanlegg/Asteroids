@@ -68,8 +68,8 @@ namespace Asteroids
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Screens
-            splashScreen   = new SplashScreen   (this.Content, new EventHandler(SplashScreen.onSplashScreenEvent));
-            menuScreen     = new MainMenuScreen (this.Content, new EventHandler(MainMenuScreen.onMainMenuEvent));
+            splashScreen   = new SplashScreen(this.Content, onSplashScreenEvent);
+            menuScreen     = new MainMenuScreen(this.Content, onMainMenuEvent);
             gameOverScreen = new GameOverScreen (this.Content, new EventHandler(GameOverScreen.onGameOverEvent));
 
             game = new Game(this.Content, null);
@@ -116,6 +116,16 @@ namespace Asteroids
             currentScreen.Draw(spriteBatch);
 
             base.Draw(gameTime);
+        }
+
+        public void onSplashScreenEvent(object obj, EventArgs e)
+        {
+            currentScreen = menuScreen;
+        }
+
+        public void onMainMenuEvent(object obj, EventArgs e)
+        {
+            currentScreen = game;
         }
     }
 }

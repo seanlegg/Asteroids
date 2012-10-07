@@ -11,7 +11,6 @@ namespace Asteroids
     {
         private AsteroidManager asteroidManager;
         private List<Player> players;
-        private List<Asteroid> asteroids;
 
         public Game(ContentManager content, EventHandler screenEvent) : base(screenEvent)
         {
@@ -56,7 +55,6 @@ namespace Asteroids
             base.Draw(spriteBatch);           
         }
 
-        // Bounding Box
         public void CheckCollisions()
         {
             asteroidManager.Asteroids.ForEach(delegate(Asteroid a)
@@ -69,10 +67,20 @@ namespace Asteroids
                     }
 
                     // Check for collisions with bullets
-                    //p.Bullets.ForEach(delegate(Bullet b)
-                    //{
+                    p.Bullets.ForEach(delegate(Bullet b)
+                    {
+                        if (Collision.BoundingSphere(b, a))
+                        {
+                            a.HandleCollision(b);
 
-                    //});
+                            b.isActive = false;
+                        }
+
+                        if (Collision.BoundingSphere(b, p))
+                        {
+                            p.HandleCollision(b);
+                        }
+                    });
                 });                
             });
         }

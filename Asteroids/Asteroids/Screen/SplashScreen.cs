@@ -67,9 +67,5 @@ namespace Asteroids
             asteroidManager.Draw(spriteBatch);
         }
 
-        public static void onSplashScreenEvent(object obj, EventArgs e)
-        {
-
-        }
     }
 }

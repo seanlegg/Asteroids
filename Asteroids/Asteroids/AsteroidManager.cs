@@ -49,7 +49,7 @@ namespace Asteroids
             //asteroids.Add(new Asteroid(texture_medium));
             //asteroids.Add(new Asteroid(texture_large));
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 500; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
@@ -66,7 +66,7 @@ namespace Asteroids
             int h = AsteroidsGame.config.ScreenHeight;
             int n = 1000;
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float)Math.Sin(rand.Next(0, n)), (float)Math.Cos(rand.Next(0, n)));
@@ -79,7 +79,14 @@ namespace Asteroids
         {
             asteroids.ForEach(delegate(Asteroid a)
             {
-                a.Update(dt);
+                if (a.isActive == false)
+                {
+                    asteroids.Remove(a);
+                }
+                else
+                {
+                    a.Update(dt);
+                }
             });
             base.Update(dt);
         }

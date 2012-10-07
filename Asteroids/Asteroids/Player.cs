@@ -140,16 +140,16 @@ namespace Asteroids
                 b.Draw(spriteBatch);
             });
 
-            //DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
-            //circle.CreateCircle(GetRadius(), 100);
-            //circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
+            DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
+            circle.CreateCircle(GetRadius(), 100);
+            circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
 
             spriteBatch.Begin();
             {
                 // Render the player's ship
                 spriteBatch.Draw(ship_texture, position, null, isCollision ? Color.Red : Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
 
-                //circle.Render(spriteBatch);
+                circle.Render(spriteBatch);
 
                 // Render the HUD
                 spriteBatch.DrawString(font, "Lives: " + lives, new Vector2(0, 20), Color.Green);
@@ -162,7 +162,7 @@ namespace Asteroids
 
         public void UserInput(float dt)
         {
-            //if (Keyboard.GetState().IsKeyDown((Keys)Enum.Parse(typeof(Keys), Asteroids.gameConfig.Keyboard.Thrust, true)) == true)
+            //if (Keyboard.GetState().IsKeyDown((Keys)Enum.Parse(typeof(Keys), AsteroidsGame.config.Keyboard.Thrust, true)) == true)
             if (Keyboard.GetState().IsKeyDown(Keys.Up) == true)
             {
                 velocity += new Vector2(

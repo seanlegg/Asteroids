@@ -33,9 +33,5 @@ namespace Asteroids
             base.Draw(spriteBatch);
         }
 
-        public static void onMainMenuEvent(object obj, EventArgs e)
-        {
-
-        }
     }
 }
