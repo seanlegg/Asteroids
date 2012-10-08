@@ -7,6 +7,14 @@ namespace Asteroids
 {
     class Asteroid : Collidable
     {
+        public enum AsteroidType
+        {
+            SMALL,
+            MEDIUM,
+            LARGE
+        };
+        private AsteroidType type;
+
         private Texture2D texture;
 
         private Vector2 origin;
@@ -17,12 +25,13 @@ namespace Asteroids
         private float rotationSpeed;
         private float speed = 1.5f;
 
-        public Asteroid(Texture2D texture, Vector2 position, Vector2 velocity)
+        public Asteroid(AsteroidType type, Texture2D texture, Vector2 position, Vector2 velocity)
         {
             Random rand = new Random();
 
             this.isActive = true;
 
+            this.type     = type;
             this.texture  = texture;
             this.position = position;
             this.velocity = velocity;
@@ -89,6 +98,21 @@ namespace Asteroids
         public override int GetRadius()
         {
             return (texture.Width > texture.Height ? texture.Width : texture.Height) / 2;
+        }
+
+        public AsteroidType Type
+        {
+            get { return type; }
+        }
+
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+
+        public Vector2 Velocity
+        {
+            get { return velocity; }
         }
 
         public int Width

@@ -45,16 +45,12 @@ namespace Asteroids
             int h = AsteroidsGame.config.ScreenHeight;
             int n = 1000;
 
-            //asteroids.Add(new Asteroid(texture_small));
-            //asteroids.Add(new Asteroid(texture_medium));
-            //asteroids.Add(new Asteroid(texture_large));
-
             for (int i = 0; i < 5; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
 
-                asteroids.Add(new Asteroid(texture_large, position, velocity));
+                asteroids.Add(new Asteroid(Asteroid.AsteroidType.LARGE, texture_large, position, velocity));
             }
         }
 
@@ -71,7 +67,7 @@ namespace Asteroids
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float)Math.Sin(rand.Next(0, n)), (float)Math.Cos(rand.Next(0, n)));
 
-                asteroids.Add(new Asteroid(texture_large, position, velocity));
+                asteroids.Add(new Asteroid(Asteroid.AsteroidType.LARGE, texture_large, position, velocity));
             }
         }
 
@@ -98,6 +94,25 @@ namespace Asteroids
             });
         }
 
+        public void SplitAsteroid(Asteroid parent, Asteroid.AsteroidType type)
+        {
+            Asteroid a = null, b = null;
+            Random rand = new Random();
+
+            if (type == Asteroid.AsteroidType.MEDIUM)
+            {
+                a = new Asteroid(Asteroid.AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
+                b = new Asteroid(Asteroid.AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
+            } 
+            else if (type == Asteroid.AsteroidType.SMALL)
+            {
+                a = new Asteroid(Asteroid.AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
+                b = new Asteroid(Asteroid.AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
+            }
+            asteroids.Add(a);
+            asteroids.Add(b);
+        }
+
         public void HandleCollision(Asteroid a, Player p) 
         {
             p.HandleCollision(a);
@@ -105,9 +120,30 @@ namespace Asteroids
 
         public void HandleCollision(Asteroid a, Bullet b) 
         {
-            a.isActive = false;
-
+            // Let the bullet handle its collision with the asteroid
             b.HandleCollision(a);
+
+            switch (a.Type)
+            {
+                case Asteroid.AsteroidType.LARGE:
+                {
+                    // Create two medium asteroids
+                    SplitAsteroid(a, Asteroid.AsteroidType.MEDIUM);
+                }
+                break;
+                case Asteroid.AsteroidType.MEDIUM:
+                {
+                    // Create two small asteroids
+                    SplitAsteroid(a, Asteroid.AsteroidType.SMALL);
+                }
+                break;
+                case Asteroid.AsteroidType.SMALL:
+                {
+                    // Do Nothing - The Asteroid is now fully destroyed
+                }
+                break;
+            }
+            a.isActive = false;
         }
 
         public List<Asteroid> Asteroids

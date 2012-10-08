@@ -57,7 +57,7 @@ namespace Asteroids
             }
             base.Update(dt);
         }
-
+        
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Begin();
