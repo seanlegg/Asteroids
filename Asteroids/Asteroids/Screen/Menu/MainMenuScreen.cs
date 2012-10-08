@@ -10,13 +10,15 @@ namespace Asteroids
 {
     class MainMenuScreen : GameScreen
     {
+        private EventHandler<MenuEvent> menuScreenEvent;
+
         private SpriteFont textFont;
 
         private List<Text> menuOptions;
 
         private int menuSelection;
 
-        public MainMenuScreen(ContentManager content, EventHandler screenEvent) : base(screenEvent)
+        public MainMenuScreen(ContentManager content, EventHandler<MenuEvent> screenEvent) : base(null)
         {
             textFont = content.Load<SpriteFont>("font/Menu");
 
@@ -25,6 +27,8 @@ namespace Asteroids
             menuOptions.Add(new Text("Quit",     textFont));
 
             menuSelection = 0;
+
+            menuScreenEvent = screenEvent;
         }
 
         public override void Update(GameTime dt)
@@ -49,7 +53,7 @@ namespace Asteroids
 
             if (InputManager.Instance.IsKeyPressed(Keys.Enter) || InputManager.Instance.IsButtonPressed(Buttons.A))
             {
-                screenEvent.Invoke(this, new MenuEvent(MenuEvent.MenuItem.NEW_GAME));
+                menuScreenEvent.Invoke(this, new MenuEvent((MenuEvent.MenuItem) menuSelection));
             }
             base.Update(dt);
         }

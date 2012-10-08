@@ -2,7 +2,7 @@
 
 namespace Asteroids
 {
-    public class MenuEvent : Event
+    public class MenuEvent : EventArgs
     {
         public enum MenuItem
         {

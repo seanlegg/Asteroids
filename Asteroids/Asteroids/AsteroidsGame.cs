@@ -69,7 +69,7 @@ namespace Asteroids
 
             // Screens
             splashScreen   = new SplashScreen(this.Content, onSplashScreenEvent);
-            menuScreen     = new MainMenuScreen(this.Content, onMainMenuEvent);
+            menuScreen     = new MainMenuScreen(this.Content, new EventHandler<MenuEvent>(onMainMenuEvent));
             gameOverScreen = new GameOverScreen (this.Content, new EventHandler(GameOverScreen.onGameOverEvent));
 
             game = new Game(this.Content, null);
@@ -126,11 +126,9 @@ namespace Asteroids
             currentScreen = menuScreen;
         }
 
-        public void onMainMenuEvent(object obj, EventArgs e)
+        public void onMainMenuEvent(object obj, MenuEvent e)
         {
-            currentScreen = game;
-            /*
-            switch (e.)
+            switch (e.Selection)
             {
                 case MenuEvent.MenuItem.NEW_GAME:
                     {
@@ -142,8 +140,8 @@ namespace Asteroids
                         this.Exit();
                     }
                     break;
-            }
-            */
+            }            
         }
+
     }
 }
