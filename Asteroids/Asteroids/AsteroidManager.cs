@@ -49,7 +49,7 @@ namespace Asteroids
             //asteroids.Add(new Asteroid(texture_medium));
             //asteroids.Add(new Asteroid(texture_large));
 
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
@@ -88,7 +88,6 @@ namespace Asteroids
                     a.Update(dt);
                 }
             });
-            base.Update(dt);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -97,7 +96,18 @@ namespace Asteroids
             {
                 a.Draw(spriteBatch);
             });
-            base.Draw(spriteBatch);
+        }
+
+        public void HandleCollision(Asteroid a, Player p) 
+        {
+            p.HandleCollision(a);
+        }
+
+        public void HandleCollision(Asteroid a, Bullet b) 
+        {
+            a.isActive = false;
+
+            b.HandleCollision(a);
         }
 
         public List<Asteroid> Asteroids

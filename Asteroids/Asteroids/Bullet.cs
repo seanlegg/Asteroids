@@ -51,6 +51,11 @@ namespace Asteroids
             base.Draw(spriteBatch);
         }
 
+        public void HandleCollision(Asteroid a)
+        {
+            isActive = false;
+        }
+
         /**
          * Collision Detection Overrides
          */

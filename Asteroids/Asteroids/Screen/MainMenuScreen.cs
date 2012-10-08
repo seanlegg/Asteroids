@@ -17,7 +17,9 @@ namespace Asteroids
 
         public override void Update(GameTime dt)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true && previousKeyboardState.IsKeyDown(Keys.Enter) == false)
+            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+
+            if ((Keyboard.GetState().IsKeyDown(Keys.Enter) == true && previousKeyboardState.IsKeyDown(Keys.Enter) == false) || gamePadState.Buttons.Start == ButtonState.Pressed)
             {
                 screenEvent.Invoke(this, null);
             }

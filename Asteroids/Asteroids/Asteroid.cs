@@ -13,8 +13,6 @@ namespace Asteroids
         private Vector2 position;
         private Vector2 velocity;
 
-        public bool isActive = true;
-
         private float rotation = 0f;
         private float rotationSpeed;
         private float speed = 1.5f;
@@ -22,6 +20,8 @@ namespace Asteroids
         public Asteroid(Texture2D texture, Vector2 position, Vector2 velocity)
         {
             Random rand = new Random();
+
+            this.isActive = true;
 
             this.texture  = texture;
             this.position = position;
@@ -50,14 +50,14 @@ namespace Asteroids
         {
             if (isActive == false) return;
             
-            DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
-            circle.CreateCircle(GetRadius(), 100);
-            circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
-            circle.Colour = Color.Red;
+            //DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
+            //circle.CreateCircle(GetRadius(), 100);
+            //circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
+            //circle.Colour = Color.Red;
 
             spriteBatch.Begin();
             spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
-            circle.Render(spriteBatch);
+            //circle.Render(spriteBatch);
             spriteBatch.End();
 
             base.Draw(spriteBatch);

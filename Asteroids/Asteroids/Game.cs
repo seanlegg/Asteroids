@@ -71,9 +71,7 @@ namespace Asteroids
                     {
                         if (Collision.BoundingSphere(b, a))
                         {
-                            a.HandleCollision(b);
-
-                            b.isActive = false;
+                            asteroidManager.HandleCollision(a,b);                            
                         }
 
                         if (Collision.BoundingSphere(b, p))
