@@ -11,7 +11,5 @@ namespace Asteroids
         protected Vector2 velocity = Vector2.Zero;
         protected float timeToLive;
         protected float speed;
-
-        public bool isActive = true;
     }
 }

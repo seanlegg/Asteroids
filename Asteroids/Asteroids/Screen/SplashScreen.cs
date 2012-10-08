@@ -14,19 +14,6 @@ namespace Asteroids
         private AsteroidManager asteroidManager;
         private KeyboardState previousKeyboardState;
 
-        private struct Text
-        {
-            public String title;
-            public Vector2 size;
-            public Vector2 center;
-
-            public Text(String title, SpriteFont font)
-            {
-                this.title  = title;
-                this.size   = font.MeasureString(title);
-                this.center = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (size.X / 2), (AsteroidsGame.config.ScreenHeight / 2) - (size.Y / 2));
-            }
-        }
         private Text gameTitle;
         private Text pressStart;
 
@@ -46,7 +33,7 @@ namespace Asteroids
         {
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-            if ((Keyboard.GetState().IsKeyDown(Keys.Enter) == true && previousKeyboardState.IsKeyDown(Keys.Enter) == false) || gamePadState.Buttons.Start == ButtonState.Pressed)
+            if (InputManager.Instance.IsKeyPressed(Keys.Enter) || InputManager.Instance.IsButtonPressed(Buttons.Start))
             {
                 screenEvent.Invoke(this, new EventArgs());
             }

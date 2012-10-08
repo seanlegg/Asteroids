@@ -108,14 +108,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asteroid.cs" />
-    <Compile Include="AsteroidManager.cs" />
+    <Compile Include="Event\Event.cs" />
+    <Compile Include="Event\MenuEvent.cs" />
+    <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Collidable.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="DebugDraw.cs" />
-    <Compile Include="EventManager.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Manager\InputManager.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,9 +125,10 @@
     <Compile Include="AsteroidsGame.cs" />
     <Compile Include="Base.cs" />
     <Compile Include="Screen\GameOverScreen.cs" />
-    <Compile Include="Screen\MainMenuScreen.cs" />
+    <Compile Include="Screen\Menu\MainMenuScreen.cs" />
     <Compile Include="Screen\GameScreen.cs" />
     <Compile Include="Screen\SplashScreen.cs" />
+    <Compile Include="Text.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -169,6 +172,10 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

@@ -102,6 +102,9 @@ namespace Asteroids
             // Update the current screen
             currentScreen.Update(gameTime);
 
+            // Update the input manager
+            InputManager.Instance.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -126,6 +129,21 @@ namespace Asteroids
         public void onMainMenuEvent(object obj, EventArgs e)
         {
             currentScreen = game;
+            /*
+            switch (e.)
+            {
+                case MenuEvent.MenuItem.NEW_GAME:
+                    {
+                        currentScreen = game;
+                    }
+                    break;
+                case MenuEvent.MenuItem.QUIT:
+                    {
+                        this.Exit();
+                    }
+                    break;
+            }
+            */
         }
     }
 }

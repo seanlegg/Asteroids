@@ -51,7 +51,7 @@ namespace Asteroids
             base.Draw(spriteBatch);
         }
 
-        public void HandleCollision(Asteroid a)
+        public override void HandleCollision(Asteroid a)
         {
             isActive = false;
         }

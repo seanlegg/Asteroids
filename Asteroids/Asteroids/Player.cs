@@ -166,7 +166,7 @@ namespace Asteroids
         {
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) == true || gamePadState.Triggers.Right > 0)
+            if (InputManager.Instance.IsKeyHeld(Keys.Up) || gamePadState.Triggers.Right > 0)
             {
                 // Calculate the speed
                 float s = gamePadState.Triggers.Right > 0 ? gamePadState.Triggers.Right * speed : speed;
@@ -182,7 +182,7 @@ namespace Asteroids
                 velocity.Y *= (1.0f - drag);
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Down) == true || gamePadState.Triggers.Left > 0)
+            if (InputManager.Instance.IsKeyHeld(Keys.Down) || gamePadState.Triggers.Left > 0)
             {
                 float b = gamePadState.Triggers.Left > 0 ? gamePadState.Triggers.Left * brake : brake;
 
@@ -190,12 +190,12 @@ namespace Asteroids
                 velocity.Y *= (1.0f - b);
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left) == true || gamePadState.DPad.Left == ButtonState.Pressed)
+            if (InputManager.Instance.IsKeyHeld(Keys.Left) || gamePadState.DPad.Left == ButtonState.Pressed)
             {
                 rotation -= rotationSpeed;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Right) == true || gamePadState.DPad.Right == ButtonState.Pressed)
+            if (InputManager.Instance.IsKeyHeld(Keys.Right) || gamePadState.DPad.Right == ButtonState.Pressed)
             {
                 rotation += rotationSpeed;
             }
@@ -205,8 +205,7 @@ namespace Asteroids
                 rotation += gamePadState.ThumbSticks.Left.X * rotationSpeed;
             }
 
-            //if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
-            if ((Keyboard.GetState().IsKeyDown(Keys.Space) == true && prevKeyboardState.IsKeyDown(Keys.Space) == false) || gamePadState.Buttons.A == ButtonState.Pressed)
+            if (InputManager.Instance.IsKeyPressed(Keys.Space) || InputManager.Instance.IsButtonPressed(Buttons.A))
             {
                 fire();
             }
