@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Asteroids.Manager
+namespace Asteroids
 {
-    class NetworkManager : Base
+    class NetworkManager : Manager
     {
         public NetworkManager()
         {
