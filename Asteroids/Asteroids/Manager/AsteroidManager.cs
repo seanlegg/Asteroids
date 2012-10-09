@@ -96,8 +96,8 @@ namespace Asteroids
 
         public void SplitAsteroid(Asteroid parent, Asteroid.AsteroidType type)
         {
-            Asteroid a = null, b = null;
             Random rand = new Random();
+            Asteroid a = null, b = null;
 
             if (type == Asteroid.AsteroidType.MEDIUM)
             {
@@ -120,6 +120,9 @@ namespace Asteroids
 
         public void HandleCollision(Asteroid a, Bullet b) 
         {
+            // Make sure the bullet is active
+            if (b.isActive == false) return;
+
             // Let the bullet handle its collision with the asteroid
             b.HandleCollision(a);
 

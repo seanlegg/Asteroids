@@ -108,6 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asteroid.cs" />
+    <Compile Include="Event\Event.cs" />
+    <Compile Include="Event\EventSubscribers.cs" />
     <Compile Include="Event\MenuEvent.cs" />
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Bullet.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="DebugDraw.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Manager\EventManager.cs" />
     <Compile Include="Manager\InputManager.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Projectile.cs" />

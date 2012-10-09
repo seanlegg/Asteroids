@@ -126,6 +126,11 @@ namespace Asteroids
             currentScreen = menuScreen;
         }
 
+        public void onGameOverEvent(object obj, EventArgs e)
+        {
+            currentScreen = gameOverScreen;
+        }
+
         public void onMainMenuEvent(object obj, MenuEvent e)
         {
             switch (e.Selection)

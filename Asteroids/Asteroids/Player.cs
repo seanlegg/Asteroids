@@ -56,6 +56,11 @@ namespace Asteroids
             isActive = true;
         }
 
+        public override void OnEvent(Event e)
+        {
+            Console.WriteLine("Event Detected");
+        }
+
         public void Respawn()
         {
             isAlive = true;
@@ -70,14 +75,14 @@ namespace Asteroids
             lives--;
             if (lives <= 0)
             {
-
+                // Game Over
             }
         }
 
         public override void HandleCollision(Player p)
         {
             // We have hit a player
-            lives -= 1;
+            DecrementLives();
         }
 
         public override void HandleCollision(Asteroid a)
@@ -100,7 +105,7 @@ namespace Asteroids
             if (b.Owner.GetHashCode() == this.GetHashCode()) return;
 
             // We've been hit by a bullet
-            lives -= 1;
+            DecrementLives();
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)

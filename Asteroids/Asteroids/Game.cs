@@ -18,6 +18,15 @@ namespace Asteroids
             players.Add(new Player(content));
 
             asteroidManager = new AsteroidManager(content, AsteroidManager.Mode.GAME);
+
+            // test
+            EventManager e = EventManager.Instance;
+
+            e.Subscribe(Event.Type.GAME_OVER, players[0]);
+            e.Publish(new Event(Event.Type.GAME_OVER));
+
+            e.Notify();
+
         }
 
         public void Init()
