@@ -50,6 +50,9 @@ namespace Asteroids
 
             graphics.ApplyChanges();
 
+            // Network
+            Components.Add(new GamerServicesComponent(this));
+
             base.Initialize();
         }
 

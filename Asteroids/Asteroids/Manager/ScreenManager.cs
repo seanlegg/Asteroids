@@ -78,7 +78,15 @@ namespace Asteroids
                     break;
                 case EventType.HOST_MULTIPLAYER_GAME:
                     {
-                        currentScreen = hostMultiplayerGameScreen;
+                        NetworkManager netManager = NetworkManager.Instance;
+
+                        if (netManager.CanHost())
+                        {
+                            NetworkManager.Instance.HostGame();
+
+                            currentScreen = hostMultiplayerGameScreen;
+                        }
+                        
                     }
                     break;
                 case EventType.QUIT:
