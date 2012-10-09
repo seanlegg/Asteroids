@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class Base
+    public class Base
     {
         public virtual void Update  (GameTime dt)             { }
         public virtual void Draw    (SpriteBatch spriteBatch) { }

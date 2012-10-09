@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace Asteroids
 {
-    class EventManager
+    class EventManager : Manager
     {
         private static EventManager instance;
 
         private Queue<Event> eventQueue;
-        private Dictionary<Event.Type, EventSubscribers> eventSubscribers;
+        private Dictionary<EventType, EventSubscribers> eventSubscribers;
 
         private EventManager()
         {
             eventQueue = new Queue<Event>();
-            eventSubscribers = new Dictionary<Event.Type, EventSubscribers>();
+            eventSubscribers = new Dictionary<EventType, EventSubscribers>();
         }
 
         public void Publish(Event e)
@@ -21,7 +21,7 @@ namespace Asteroids
             eventQueue.Enqueue(e);
         }
 
-        public void Subscribe(Event.Type type, Base subscriber)
+        public void Subscribe(EventType type, Base subscriber)
         {
             if (eventSubscribers.ContainsKey(type))
             {

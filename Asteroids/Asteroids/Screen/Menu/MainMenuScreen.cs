@@ -10,25 +10,21 @@ namespace Asteroids
 {
     class MainMenuScreen : GameScreen
     {
-        private EventHandler<MenuEvent> menuScreenEvent;
-
         private SpriteFont textFont;
 
-        private List<Text> menuOptions;
+        private List<MenuOption> menuOptions;
 
         private int menuSelection;
 
-        public MainMenuScreen(ContentManager content, EventHandler<MenuEvent> screenEvent) : base(null)
+        public MainMenuScreen(ContentManager content)
         {
             textFont = content.Load<SpriteFont>("font/Menu");
 
-            menuOptions = new List<Text>();
-            menuOptions.Add(new Text("New Game", textFont));
-            menuOptions.Add(new Text("Quit",     textFont));
+            menuOptions = new List<MenuOption>();
+            menuOptions.Add(new MenuOption("New Game", EventType.NEW_GAME, textFont));
+            menuOptions.Add(new MenuOption("Quit",     EventType.QUIT,     textFont));
 
             menuSelection = 0;
-
-            menuScreenEvent = screenEvent;
         }
 
         public override void Update(GameTime dt)
@@ -53,18 +49,38 @@ namespace Asteroids
 
             if (InputManager.Instance.IsKeyPressed(Keys.Enter) || InputManager.Instance.IsButtonPressed(Buttons.A))
             {
-                menuScreenEvent.Invoke(this, new MenuEvent((MenuEvent.MenuItem) menuSelection));
+                GetMenuSelection();
             }
             base.Update(dt);
         }
-        
+
+        public void GetMenuSelection()
+        {
+            MenuOption option = menuOptions[menuSelection];
+
+            switch (option.type)
+            {
+                case EventType.NEW_GAME:
+                    {
+                        EventManager.Instance.Publish(new Event(EventType.NEW_GAME));
+                    }
+                    break;
+                case EventType.QUIT:
+                    {
+                        EventManager.Instance.Publish(new Event(EventType.QUIT));
+                    }
+                    break;
+            }
+            
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Begin();
             {
                 for (int i = 0; i < menuOptions.Count; i++)
                 {
-                    Text option = menuOptions[i];
+                    MenuOption option = menuOptions[i];
 
                     spriteBatch.DrawString(textFont, option.title, new Vector2(option.center.X, option.size.Y * i), menuSelection == i ? Color.Green : Color.DarkGray);
                 }                

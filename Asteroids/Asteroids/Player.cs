@@ -76,6 +76,11 @@ namespace Asteroids
             if (lives <= 0)
             {
                 // Game Over
+                EventManager.Instance.Publish(new Event(EventType.GAME_OVER));
+            }
+            else
+            {
+                Respawn();
             }
         }
 
@@ -92,11 +97,7 @@ namespace Asteroids
             {
                 DecrementLives();
             }
-            isAlive = false;
-
             isCollision = true;
-
-            Respawn();
         }
 
         public override void HandleCollision(Bullet b)
@@ -105,7 +106,7 @@ namespace Asteroids
             if (b.Owner.GetHashCode() == this.GetHashCode()) return;
 
             // We've been hit by a bullet
-            DecrementLives();
+            DecrementLives();   
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -246,6 +247,7 @@ namespace Asteroids
         public Vector2 Position
         {
             get { return position; }
+            set { position = value; }
         }
 
         public float Rotation

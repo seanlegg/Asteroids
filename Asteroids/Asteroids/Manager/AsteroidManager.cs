@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class AsteroidManager : Base
+    class AsteroidManager : Manager
     {
         private List<Asteroid> asteroids;
         private Texture2D texture_small;

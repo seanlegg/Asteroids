@@ -5,20 +5,25 @@ using System.Text;
 
 namespace Asteroids
 {
-    class Event
+    public enum EventType
     {
-        public enum Type
-        {
-            GAME_OVER
-        }
-        private Type type;
+        NAVIGATE_SPLASH_SCREEN,
+        NAVIGATE_MAIN_MENU,
+        NEW_GAME,
+        GAME_OVER,
+        QUIT
+    }
 
-        public Event(Type t)
+    public class Event
+    {
+        private EventType type;
+
+        public Event(EventType t)
         {
             type = t;
         }
 
-        public Type EventType
+        public EventType EventType
         {
             get { return type; }
         }

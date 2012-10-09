@@ -17,7 +17,7 @@ namespace Asteroids
         private Text gameTitle;
         private Text pressStart;
 
-        public SplashScreen(ContentManager content, EventHandler screenEvent) : base(screenEvent)
+        public SplashScreen(ContentManager content)
         {
             titleFont = content.Load<SpriteFont>("font/Menu");
             textFont  = content.Load<SpriteFont>("font/Segoe");
@@ -35,7 +35,7 @@ namespace Asteroids
 
             if (InputManager.Instance.IsKeyPressed(Keys.Enter) || InputManager.Instance.IsButtonPressed(Buttons.Start))
             {
-                screenEvent.Invoke(this, new EventArgs());
+                EventManager.Instance.Publish(new Event(EventType.NAVIGATE_MAIN_MENU));
             }
             asteroidManager.Update(dt);
 

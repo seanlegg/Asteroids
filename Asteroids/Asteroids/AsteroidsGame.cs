@@ -19,16 +19,11 @@ namespace Asteroids
         // Game Configuration
         public static Config config;
         public static GraphicsDeviceManager graphics;
+        public static bool isRunning = true;
 
         SpriteBatch spriteBatch;
 
-        // Screens
-        GameScreen currentScreen;
-
-        Game game;
-        SplashScreen   splashScreen;
-        MainMenuScreen menuScreen;
-        GameOverScreen gameOverScreen;
+        private ScreenManager screenManager;
 
         public AsteroidsGame()
         {
@@ -67,16 +62,8 @@ namespace Asteroids
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Screens
-            splashScreen   = new SplashScreen(this.Content, onSplashScreenEvent);
-            menuScreen     = new MainMenuScreen(this.Content, new EventHandler<MenuEvent>(onMainMenuEvent));
-            gameOverScreen = new GameOverScreen (this.Content, new EventHandler(GameOverScreen.onGameOverEvent));
-
-            game = new Game(this.Content, null);
-
-            // Set the currently active screen
-            //currentScreen = game;
-            currentScreen = splashScreen;
+            // Screen Manger
+            screenManager = new ScreenManager(this.Content);
         }
 
         /// <summary>
@@ -95,15 +82,20 @@ namespace Asteroids
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            InputManager iManager = InputManager.Instance;
+
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (isRunning == false || iManager.IsButtonPressed(Buttons.Back) || iManager.IsKeyPressed(Keys.Escape))
                 this.Exit();
 
             // Update the current screen
-            currentScreen.Update(gameTime);
+            screenManager.currentScreen.Update(gameTime);
 
             // Update the input manager
             InputManager.Instance.Update(gameTime);
+
+            // Update the event manager
+            EventManager.Instance.Notify();
 
             base.Update(gameTime);
         }
@@ -116,36 +108,9 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.Black);
 
-            currentScreen.Draw(spriteBatch);
+            screenManager.currentScreen.Draw(spriteBatch);
 
             base.Draw(gameTime);
-        }
-
-        public void onSplashScreenEvent(object obj, EventArgs e)
-        {
-            currentScreen = menuScreen;
-        }
-
-        public void onGameOverEvent(object obj, EventArgs e)
-        {
-            currentScreen = gameOverScreen;
-        }
-
-        public void onMainMenuEvent(object obj, MenuEvent e)
-        {
-            switch (e.Selection)
-            {
-                case MenuEvent.MenuItem.NEW_GAME:
-                    {
-                        currentScreen = game;
-                    }
-                    break;
-                case MenuEvent.MenuItem.QUIT:
-                    {
-                        this.Exit();
-                    }
-                    break;
-            }            
         }
 
     }

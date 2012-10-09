@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
-    class InputManager : Base
+    class InputManager : Manager
     {
         private static InputManager instance;
 

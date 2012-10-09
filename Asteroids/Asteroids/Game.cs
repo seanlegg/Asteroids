@@ -12,21 +12,12 @@ namespace Asteroids
         private AsteroidManager asteroidManager;
         private List<Player> players;
 
-        public Game(ContentManager content, EventHandler screenEvent) : base(screenEvent)
+        public Game(ContentManager content)
         {
             players = new List<Player>();
             players.Add(new Player(content));
 
             asteroidManager = new AsteroidManager(content, AsteroidManager.Mode.GAME);
-
-            // test
-            EventManager e = EventManager.Instance;
-
-            e.Subscribe(Event.Type.GAME_OVER, players[0]);
-            e.Publish(new Event(Event.Type.GAME_OVER));
-
-            e.Notify();
-
         }
 
         public void Init()
