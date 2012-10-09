@@ -28,13 +28,16 @@ namespace Asteroids
         private int lives = 3;
         private int score = 0;
 
-        private const float drag  = 0.005f;
-        private const float brake = 0.025f;
-        private const float rotationSpeed = 0.125f;
-        private const float gunCooldown   = 0.5f;
+        private float timeTillRespawn     = 0f;
+        private float spawnProtectionTime = 0f;
 
-        private bool isAlive = true;
-        private bool isCollision = false;
+        // Constants
+        private const float drag            = 0.005f;
+        private const float brake           = 0.025f;
+        private const float rotationSpeed   = 0.125f;
+        private const float gunCooldown     = 0.5f;
+        private const float respawnTime     = 1.0f;
+        private const float spawnProtection = 2f;
 
         public Player(ContentManager content)
         {
@@ -63,7 +66,9 @@ namespace Asteroids
 
         public void Respawn()
         {
-            isAlive = true;
+            isActive = true;
+
+            spawnProtectionTime = spawnProtection;
 
             velocity = Vector2.Zero;
             position = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.config.ScreenHeight / 2) - (ship_texture.Height / 2));
@@ -72,7 +77,9 @@ namespace Asteroids
 
         public void DecrementLives()
         {
+            isActive = false;
             lives--;
+
             if (lives <= 0)
             {
                 // Game Over
@@ -80,38 +87,65 @@ namespace Asteroids
             }
             else
             {
-                Respawn();
+                timeTillRespawn = respawnTime;                
             }
         }
 
         public override void HandleCollision(Player p)
         {
+            if (IsSpawnProtectionActive == true) return;
+
             // We have hit a player
-            DecrementLives();
+            if (isActive)
+            {
+                DecrementLives();
+            }
         }
 
         public override void HandleCollision(Asteroid a)
         {
+            if (IsSpawnProtectionActive == true) return;
+
             // We have hit an Asteroid
-            if (isAlive)
+            if (isActive)
             {
                 DecrementLives();
             }
-            isCollision = true;
         }
 
         public override void HandleCollision(Bullet b)
         {
+            if (IsSpawnProtectionActive == true) return;
+
             // Immunity to our own bullets
             if (b.Owner.GetHashCode() == this.GetHashCode()) return;
 
             // We've been hit by a bullet
-            DecrementLives();   
+            if (isActive)
+            {
+                DecrementLives();
+            } 
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
             float dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (isActive == false)
+            {
+                timeTillRespawn -= dt;
+                if (timeTillRespawn <= 0)
+                {
+                    Respawn();
+                }
+                return;
+            }
+
+            // Spawn Protection
+            if (spawnProtectionTime > 0)
+            {
+                spawnProtectionTime -= dt;
+            }
 
             // Process user input
             UserInput(dt);   
@@ -135,8 +169,6 @@ namespace Asteroids
 
             prevKeyboardState = Keyboard.GetState();
 
-            isCollision = false;
-
             base.Update(gameTime);
         }
 
@@ -155,7 +187,10 @@ namespace Asteroids
             spriteBatch.Begin();
             {
                 // Render the player's ship
-                spriteBatch.Draw(ship_texture, position, null, isCollision ? Color.Red : Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+                if (isActive)
+                {
+                    spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+                }
 
                 //circle.Render(spriteBatch);
 
@@ -239,6 +274,11 @@ namespace Asteroids
         }
 
         /* Getters / Setters */
+        public bool IsSpawnProtectionActive
+        {
+            get { return spawnProtectionTime > 0f; }
+        }
+
         public List<Bullet> Bullets
         {
             get { return bullets; }

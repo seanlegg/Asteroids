@@ -17,7 +17,7 @@ namespace Asteroids
             players = new List<Player>();
             players.Add(new Player(content));
 
-            asteroidManager = new AsteroidManager(content, AsteroidManager.Mode.GAME);
+            asteroidManager = new AsteroidManager(content, Mode.GAME);
         }
 
         public void Init()
@@ -61,19 +61,22 @@ namespace Asteroids
             {                
                 players.ForEach(delegate(Player p)
                 {
+                    // Check for collisions between Asteroids and Players
                     if (Collision.BoundingSphere(a, p) == true)
                     {
-                        p.HandleCollision(a);
+                        asteroidManager.HandleCollision(a, p); 
                     }
 
                     // Check for collisions with bullets
                     p.Bullets.ForEach(delegate(Bullet b)
                     {
+                        // Bullets - Asteroids
                         if (Collision.BoundingSphere(b, a))
                         {
                             asteroidManager.HandleCollision(a,b);                            
                         }
 
+                        // Bullets - Players
                         if (Collision.BoundingSphere(b, p))
                         {
                             p.HandleCollision(b);

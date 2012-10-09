@@ -5,14 +5,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
+    public enum AsteroidType
+    {
+        SMALL,
+        MEDIUM,
+        LARGE
+    };
+
     class Asteroid : Collidable
     {
-        public enum AsteroidType
-        {
-            SMALL,
-            MEDIUM,
-            LARGE
-        };
+
         private AsteroidType type;
 
         private Texture2D texture;

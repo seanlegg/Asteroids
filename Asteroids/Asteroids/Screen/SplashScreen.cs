@@ -22,7 +22,7 @@ namespace Asteroids
             titleFont = content.Load<SpriteFont>("font/Menu");
             textFont  = content.Load<SpriteFont>("font/Segoe");
 
-            asteroidManager = new AsteroidManager(content, AsteroidManager.Mode.TITLE);
+            asteroidManager = new AsteroidManager(content, Mode.TITLE);
 
             gameTitle  = new Text("XNA Asteroids", titleFont);
             pressStart = new Text("Press ENTER to start", textFont);
