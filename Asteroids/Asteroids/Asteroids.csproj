@@ -113,6 +113,10 @@
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Entity\Bullet.cs" />
     <Compile Include="Base\Collidable.cs" />
+    <Compile Include="Screen\FindMultiplayerGameScreen.cs" />
+    <Compile Include="Screen\HostMultiplayerGameScreen.cs" />
+    <Compile Include="Screen\Menu\MenuScreen.cs" />
+    <Compile Include="Screen\Menu\MultiplayerMenuScreen.cs" />
     <Compile Include="Util\Collision.cs" />
     <Compile Include="Util\DebugDraw.cs" />
     <Compile Include="Game.cs" />
