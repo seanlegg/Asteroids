@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.GamerServices;
 
@@ -11,13 +12,30 @@ namespace Asteroids
         private NetworkSessionProperties sessionProperties;
         private NetworkSession session;
 
+        private AvailableNetworkSessionCollection availableSessions;
+
         private const int privateGamerSlots   = 0;
         private const int maximumPlayers      = 4;
         private const int maximumLocalPlayers = 1;
 
         private NetworkManager()
         {
+            // Subscribe to Events
+            EventManager eventManager = EventManager.Instance;
 
+            eventManager.Subscribe(EventType.FIND_MULTIPLAYER_GAME, this);
+            eventManager.Subscribe(EventType.HOST_MULTIPLAYER_GAME, this);
+        }
+
+        public AvailableNetworkSessionCollection FindGames()
+        {
+            if (availableSessions != null)
+            {
+                availableSessions.Dispose();
+            }
+            availableSessions = NetworkSession.Find(NetworkSessionType.SystemLink, maximumLocalPlayers, null);
+
+            return availableSessions;
         }
 
         public void HostGame()
@@ -27,17 +45,23 @@ namespace Asteroids
             sessionProperties = new NetworkSessionProperties();
 
             // Create the game session
-            session = NetworkSession.Create(NetworkSessionType.Local, maximumLocalPlayers, maximumPlayers, privateGamerSlots, sessionProperties);
+            if (session != null)
+            {
+                session.Dispose();
+            }
+            session = NetworkSession.Create(NetworkSessionType.SystemLink, maximumLocalPlayers, maximumPlayers, privateGamerSlots, sessionProperties);
 
             // Game Config
-            session.AllowHostMigration = true;
-            session.AllowJoinInProgress = true;
+            session.AllowHostMigration  = true;
+            session.AllowJoinInProgress = true;            
 
             session.GamerJoined += new EventHandler<GamerJoinedEventArgs>(onGamerJoinSession);
         }
 
-        public bool CanHost()
+        public bool IsSignedIn()
         {
+            if (Guide.IsVisible) return false;
+
             if (Gamer.SignedInGamers.Count == 0)
             {
                 Guide.ShowSignIn(maximumLocalPlayers, false);
@@ -50,6 +74,11 @@ namespace Asteroids
         public void onGamerJoinSession(object sender, GamerJoinedEventArgs e)        
         {
             Console.WriteLine("A gamer has joined the session");
+        }
+
+        public override void OnEvent(Event e)
+        {
+            base.OnEvent(e);
         }
 
         #region singleton

@@ -38,12 +38,15 @@ namespace Asteroids
             }
         }
 
-        public void Init()
+        public override void Init()
         {
+            // Remove any existing asteroids
+            asteroids.Clear();
+
             Random rand = new Random();
 
-            int w = AsteroidsGame.config.ScreenWidth;
-            int h = AsteroidsGame.config.ScreenHeight;
+            int w = GameBase.config.ScreenWidth;
+            int h = GameBase.config.ScreenHeight;
             int n = 1000;
 
             for (int i = 0; i < 5; i++)
@@ -57,10 +60,13 @@ namespace Asteroids
 
         public void InitTitle()
         {
+            // Remove any existing asteroids
+            asteroids.Clear();
+
             Random rand = new Random();
 
-            int w = AsteroidsGame.config.ScreenWidth;
-            int h = AsteroidsGame.config.ScreenHeight;
+            int w = GameBase.config.ScreenWidth;
+            int h = GameBase.config.ScreenHeight;
             int n = 1000;
 
             for (int i = 0; i < 20; i++)

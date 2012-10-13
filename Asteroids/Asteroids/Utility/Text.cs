@@ -14,7 +14,7 @@ namespace Asteroids
         {
             this.title = title;
             this.size = font.MeasureString(title);
-            this.center = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (size.X / 2), (AsteroidsGame.config.ScreenHeight / 2) - (size.Y / 2));
+            this.center = new Vector2((GameBase.config.ScreenWidth / 2) - (size.X / 2), (GameBase.config.ScreenHeight / 2) - (size.Y / 2));
         }
     }
 }

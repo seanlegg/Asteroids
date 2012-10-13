@@ -14,7 +14,7 @@ namespace Asteroids
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class AsteroidsGame : Microsoft.Xna.Framework.Game
+    public class GameBase : Microsoft.Xna.Framework.Game
     {
         // Game Configuration
         public static Config config;
@@ -23,9 +23,10 @@ namespace Asteroids
 
         SpriteBatch spriteBatch;
 
+        private Texture2D gamerPicture;
         private ScreenManager screenManager;
 
-        public AsteroidsGame()
+        public GameBase()
         {
             graphics = new GraphicsDeviceManager(this);
                         
@@ -88,7 +89,7 @@ namespace Asteroids
             InputManager iManager = InputManager.Instance;
 
             // Allows the game to exit
-            if (isRunning == false || iManager.IsButtonPressed(Buttons.Back) || iManager.IsKeyPressed(Keys.Escape))
+            if (isRunning == false)
                 this.Exit();
 
             // Update the current screen
@@ -112,6 +113,15 @@ namespace Asteroids
             GraphicsDevice.Clear(Color.Black);
 
             screenManager.currentScreen.Draw(spriteBatch);
+
+            if (gamerPicture != null)
+            {
+                spriteBatch.Begin();
+                {
+                    spriteBatch.Draw(gamerPicture, new Rectangle(0, 0, 80, 80), Color.White);
+                }
+                spriteBatch.End();
+            }
 
             base.Draw(gameTime);
         }

@@ -21,7 +21,14 @@ namespace Asteroids
 
         public override void Update(GameTime dt)
         {
-            if (InputManager.Instance.IsKeyPressed(Keys.Up) || InputManager.Instance.IsButtonPressed(Buttons.DPadUp))
+            InputManager input = InputManager.Instance;
+
+            if (input.IsKeyPressed(Keys.Escape) || input.IsButtonPressed(Buttons.B))
+            {
+                EventManager.Instance.Publish(new Event(EventType.NAVIGATE_MAIN_MENU));
+            }
+
+            if (input.IsKeyPressed(Keys.Up) || input.IsButtonPressed(Buttons.DPadUp))
             {
                 menuSelection--;
                 if (menuSelection < 0)
@@ -30,7 +37,7 @@ namespace Asteroids
                 }
             }
 
-            if (InputManager.Instance.IsKeyPressed(Keys.Down) || InputManager.Instance.IsButtonPressed(Buttons.DPadDown))
+            if (input.IsKeyPressed(Keys.Down) || input.IsButtonPressed(Buttons.DPadDown))
             {
                 menuSelection++;
                 if (menuSelection > menuOptions.Count - 1)
@@ -39,7 +46,7 @@ namespace Asteroids
                 }
             }
 
-            if (InputManager.Instance.IsKeyPressed(Keys.Enter) || InputManager.Instance.IsButtonPressed(Buttons.A))
+            if (input.IsKeyPressed(Keys.Enter) || input.IsButtonPressed(Buttons.A))
             {            
                 GetMenuSelection();
                 Reset();
@@ -52,7 +59,7 @@ namespace Asteroids
             menuSelection = 0;
         }
 
-        public void GetMenuSelection()
+        public override void GetMenuSelection()
         {
             EventManager.Instance.Publish(new Event(menuOptions[menuSelection].type));
         }

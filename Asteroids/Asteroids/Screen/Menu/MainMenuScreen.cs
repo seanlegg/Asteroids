@@ -49,7 +49,7 @@ namespace Asteroids
             base.Update(dt);
         }
 
-        public void GetMenuSelection()
+        public override void GetMenuSelection()
         {
             EventManager.Instance.Publish(new Event(menuOptions[menuSelection].type));            
         }

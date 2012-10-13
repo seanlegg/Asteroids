@@ -49,6 +49,8 @@ namespace Asteroids
 
         public override void OnEvent(Event e)
         {
+            GameScreen previousScreen = currentScreen;
+
             switch (e.EventType)
             {
                 case EventType.NAVIGATE_MAIN_MENU:
@@ -72,28 +74,26 @@ namespace Asteroids
                     }
                     break;
                 case EventType.FIND_MULTIPLAYER_GAME:
-                    {
+                    {                        
                         currentScreen = findMultiplayerGameScreen;
                     }
                     break;
                 case EventType.HOST_MULTIPLAYER_GAME:
                     {
-                        NetworkManager netManager = NetworkManager.Instance;
-
-                        if (netManager.CanHost())
-                        {
-                            NetworkManager.Instance.HostGame();
-
-                            currentScreen = hostMultiplayerGameScreen;
-                        }
-                        
+                        currentScreen = hostMultiplayerGameScreen;
                     }
                     break;
                 case EventType.QUIT:
                     {
-                        AsteroidsGame.isRunning = false;
+                        GameBase.isRunning = false;
                     }
                     break;
+            }
+
+            if (currentScreen != previousScreen)
+            {
+                currentScreen.onActivate    ();
+                previousScreen.onDeactivate ();
             }
         }
     }

@@ -6,6 +6,7 @@ namespace Asteroids
 {
     public class GameScreen : Base
     {
-
+        public virtual void onActivate   () { }
+        public virtual void onDeactivate () { }
     }
 }

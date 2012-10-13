@@ -18,11 +18,26 @@ namespace Asteroids
             players.Add(new Player(content));
 
             asteroidManager = new AsteroidManager(content, Mode.GAME);
+
+            // Subscribe to Events
+            EventManager eventManager = EventManager.Instance;
+
+            eventManager.Subscribe(EventType.NEW_GAME, this);
         }
 
-        public void Init()
+        public void InitGame()
         {
-            // level = ...            
+            // level = ...
+
+            // Initialize Asteroids
+            asteroidManager.Init();
+
+            // Initialize Players
+            players.ForEach(delegate(Player p)
+            {
+                p.Init();
+            });
+
         }
 
         public override void Update(GameTime dt)
@@ -53,6 +68,15 @@ namespace Asteroids
             asteroidManager.Draw(spriteBatch);
 
             base.Draw(spriteBatch);           
+        }
+
+        public override void OnEvent(Event e)
+        {
+            if (e.EventType == EventType.NEW_GAME)
+            {
+                InitGame();
+            }
+            base.OnEvent(e);
         }
 
         public void CheckCollisions()

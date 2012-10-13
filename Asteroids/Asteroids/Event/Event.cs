@@ -7,6 +7,10 @@ namespace Asteroids
 {
     public enum EventType
     {
+        // Screen Events
+        //ACTIVATE,
+        //DEACTIVATE,
+
         // Menus
         NAVIGATE_SPLASH_SCREEN,
         NAVIGATE_MAIN_MENU,

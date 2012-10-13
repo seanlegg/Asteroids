@@ -50,7 +50,7 @@ namespace Asteroids
 
             bullets = new List<Bullet>();
 
-            position = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.config.ScreenHeight / 2) - (ship_texture.Height / 2));
+            position = new Vector2((GameBase.config.ScreenWidth / 2) - (ship_texture.Width / 2), (GameBase.config.ScreenHeight / 2) - (ship_texture.Height / 2));
             velocity = Vector2.Zero;
             origin = new Vector2(ship_texture.Width / 2, ship_texture.Height / 2);
 
@@ -59,9 +59,11 @@ namespace Asteroids
             isActive = true;
         }
 
-        public override void OnEvent(Event e)
+        public override void Init()
         {
-            Console.WriteLine("Event Detected");
+            lives = 3;
+
+            base.Init();
         }
 
         public void Respawn()
@@ -71,7 +73,7 @@ namespace Asteroids
             spawnProtectionTime = spawnProtection;
 
             velocity = Vector2.Zero;
-            position = new Vector2((AsteroidsGame.config.ScreenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.config.ScreenHeight / 2) - (ship_texture.Height / 2));
+            position = new Vector2((GameBase.config.ScreenWidth / 2) - (ship_texture.Width / 2), (GameBase.config.ScreenHeight / 2) - (ship_texture.Height / 2));
             rotation = 0.0f;
         }
 
@@ -273,7 +275,8 @@ namespace Asteroids
             return (ship_texture.Width > ship_texture.Height ? ship_texture.Width : ship_texture.Height) / 2;
         }
 
-        /* Getters / Setters */
+        #region Getters & Setters
+
         public bool IsSpawnProtectionActive
         {
             get { return spawnProtectionTime > 0f; }
@@ -290,6 +293,12 @@ namespace Asteroids
             set { position = value; }
         }
 
+        public int Lives
+        {
+            get;
+            set;
+        }
+
         public float Rotation
         {
             get { return rotation; }
@@ -304,5 +313,7 @@ namespace Asteroids
         {
             get { return ship_texture.Height; }
         }
+
+        #endregion
     }
 }
