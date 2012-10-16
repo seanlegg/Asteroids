@@ -1,9 +1,6 @@
 ﻿#region File Description
 //-----------------------------------------------------------------------------
-// BackgroundScreen.cs
-//
-// Microsoft XNA Community Game Platform
-// Copyright (C) Microsoft Corporation. All rights reserved.
+// TitleBackgroundScreen.cs
 //-----------------------------------------------------------------------------
 #endregion
 
@@ -21,12 +18,12 @@ namespace Asteroids
     /// It draws a background image that remains fixed in place regardless
     /// of whatever transitions the screens on top of it may be doing.
     /// </summary>
-    class BackgroundScreen : GameScreen
+    class TitleBackgroundScreen : GameScreen
     {
         #region Fields
 
         ContentManager content;
-        Texture2D backgroundTexture;
+        AsteroidManager asteroidManager;
 
         #endregion
 
@@ -36,9 +33,9 @@ namespace Asteroids
         /// <summary>
         /// Constructor.
         /// </summary>
-        public BackgroundScreen()
+        public TitleBackgroundScreen()
         {
-            TransitionOnTime = TimeSpan.FromSeconds(0.5);
+            TransitionOnTime  = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
         }
 
@@ -55,7 +52,7 @@ namespace Asteroids
             if (content == null)
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            backgroundTexture = content.Load<Texture2D>("background/background");
+            asteroidManager = new AsteroidManager(content, Mode.TITLE);
         }
 
 
@@ -83,6 +80,8 @@ namespace Asteroids
         public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                        bool coveredByOtherScreen)
         {
+            asteroidManager.Update(gameTime);
+
             base.Update(gameTime, otherScreenHasFocus, false);
         }
 
@@ -93,15 +92,8 @@ namespace Asteroids
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-            Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-            Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
 
-            spriteBatch.Begin();
-
-            spriteBatch.Draw(backgroundTexture, fullscreen,
-                             new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
-
-            spriteBatch.End();
+            asteroidManager.Draw(spriteBatch);
         }
 
 

@@ -422,6 +422,15 @@ namespace Asteroids {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Return To Title.
+        /// </summary>
+        internal static string ReturnToTitle {
+            get {
+                return ResourceManager.GetString("ReturnToTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Single Player.
         /// </summary>
         internal static string SinglePlayer {

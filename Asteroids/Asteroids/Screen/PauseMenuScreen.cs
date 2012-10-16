@@ -96,8 +96,7 @@ namespace Asteroids
         /// </summary>
         void ConfirmQuitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
-            //LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(), new MainMenuScreen());
-            LoadingScreen.Load(ScreenManager, false, null, null, new MainMenuScreen());
+            LoadingScreen.Load(ScreenManager, false, null, new TitleBackgroundScreen(), new MainMenuScreen());
         }
 
 

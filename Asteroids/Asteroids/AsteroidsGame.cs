@@ -44,7 +44,7 @@ namespace Asteroids
             Components.Add(new GamerServicesComponent(this));
 
             // Activate the first screens.
-            //screenManager.AddScreen(new BackgroundScreen(), null);
+            screenManager.AddScreen(new TitleBackgroundScreen(), null);
             screenManager.AddScreen(new MainMenuScreen(), null);
 
             // Listen for invite notification events.

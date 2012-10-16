@@ -27,7 +27,7 @@ namespace Asteroids
         private float rotationSpeed;
         private float speed = 1.5f;
 
-        public Asteroid(AsteroidType type, Texture2D texture, Vector2 position, Vector2 velocity)
+        public Asteroid(AsteroidType type, Texture2D texture, Vector2 position, Vector2 velocity, float rotation, float rotationSpeed)
         {
             Random rand = new Random();
 
@@ -38,9 +38,11 @@ namespace Asteroids
             this.position = position;
             this.velocity = velocity;
             this.origin   = new Vector2(texture.Width / 2, texture.Height / 2);
+            this.rotation = rotation;
+            this.rotationSpeed = rotationSpeed;
 
-            rotation = rand.Next(0, 359);
-            rotationSpeed = (float) rand.NextDouble() / 20;
+            //rotation      = rand.Next(0, 359);
+            //rotationSpeed = ((float) Math.Sin(rand.Next(0, 1000))) * 0.05f;
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime dt)

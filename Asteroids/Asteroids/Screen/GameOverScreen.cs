@@ -18,7 +18,7 @@ namespace Asteroids
     /// The pause menu comes up over the top of the game,
     /// giving the player options to resume or quit.
     /// </summary>
-    class GameOverScreen : GameScreen
+    class GameOverScreen : MenuScreen
     {
         #region Fields
 
@@ -32,29 +32,31 @@ namespace Asteroids
         /// Constructor.
         /// </summary>
         public GameOverScreen(NetworkSession networkSession)
+            : base(Resources.GameOver)
         {
             this.networkSession = networkSession;
+
+            // If this is a single player game then allow the player to return to the menu
+            if (networkSession == null)
+            {
+                MenuEntry returnToTitleEntry = new MenuEntry(Resources.ReturnToTitle);
+                returnToTitleEntry.Selected += ReturnToTitleSelected;
+                MenuEntries.Add(returnToTitleEntry);
+            }
         }
 
-
-        #endregion
-
-        #region Update & Draw
-
-        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
-        {
-            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            base.Draw(gameTime);
-        }
 
         #endregion
 
         #region Handle Input
 
+        /// <summary>
+        /// Event handler for when the return to title entry is selected.
+        /// </summary>
+        void ReturnToTitleSelected(object sender, PlayerIndexEventArgs e)
+        {
+            LoadingScreen.Load(ScreenManager, false, null, new TitleBackgroundScreen(), new MainMenuScreen());
+        }
 
         #endregion
     }

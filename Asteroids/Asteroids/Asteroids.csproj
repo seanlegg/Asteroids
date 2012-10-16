@@ -121,7 +121,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Screen\BackgroundScreen.cs" />
+    <Compile Include="Screen\TitleBackgroundScreen.cs" />
     <Compile Include="Screen\GameOverScreen.cs" />
     <Compile Include="Screen\GameplayScreen.cs" />
     <Compile Include="Screen\LoadingScreen.cs" />

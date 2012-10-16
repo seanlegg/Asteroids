@@ -244,6 +244,9 @@ B button, Esc = cancel</value>
   <data name="ReturnToLobby" xml:space="preserve">
     <value>Return to Lobby</value>
   </data>
+  <data name="ReturnToTitle" xml:space="preserve">
+    <value>Return To Title</value>
+  </data>
   <data name="SinglePlayer" xml:space="preserve">
     <value>Single Player</value>
   </data>

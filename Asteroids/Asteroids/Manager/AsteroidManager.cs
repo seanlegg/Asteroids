@@ -19,9 +19,15 @@ namespace Asteroids
         private Texture2D texture_small;
         private Texture2D texture_medium;
         private Texture2D texture_large;
+        
+        private Random rand;
+
+        private const int max_asteroids_title = 15;
 
         public AsteroidManager(ContentManager content, Mode mode)
         {
+            rand = new Random();
+
             asteroids = new List<Asteroid>();
 
             texture_small  = content.Load<Texture2D>("sprite/asteroid_small");
@@ -43,8 +49,7 @@ namespace Asteroids
             // Remove any existing asteroids
             asteroids.Clear();
 
-            Random rand = new Random();
-
+            // TODO: Remove Magic Numbers
             int w = 1280;
             int h = 720;
             int n = 1000;
@@ -54,7 +59,10 @@ namespace Asteroids
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
 
-                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity));
+                float rotation = rand.Next(0, 359);
+                float rotationSpeed = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
+
+                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
             }
         }         
 
@@ -63,18 +71,20 @@ namespace Asteroids
             // Remove any existing asteroids
             asteroids.Clear();
 
-            Random rand = new Random();
-
+            // TODO: Remove Magic Numbers
             int w = 1280;
             int h = 720;
             int n = 1000;
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < max_asteroids_title; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float)Math.Sin(rand.Next(0, n)), (float)Math.Cos(rand.Next(0, n)));
 
-                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity));
+                float rotation      = rand.Next(0, 359);
+                float rotationSpeed = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
+
+                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
             }
         }
 
@@ -103,18 +113,17 @@ namespace Asteroids
 
         public void SplitAsteroid(Asteroid parent, AsteroidType type)
         {
-            Random rand = new Random();
             Asteroid a = null, b = null;
 
             if (type == AsteroidType.MEDIUM)
             {
-                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
-                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
+                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
+                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
             } 
             else if (type == AsteroidType.SMALL)
             {
-                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
-                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)));
+                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
+                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
             }
             asteroids.Add(a);
             asteroids.Add(b);

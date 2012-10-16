@@ -9,6 +9,7 @@
 
 #region Using Statements
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Net;
 #endregion
 
@@ -19,6 +20,7 @@ namespace Asteroids
     /// </summary>
     class MainMenuScreen : MenuScreen
     {
+
         #region Initialization
 
         /// <summary>

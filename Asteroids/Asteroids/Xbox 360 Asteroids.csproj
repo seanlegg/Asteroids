@@ -79,7 +79,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Screen\BackgroundScreen.cs" />
     <Compile Include="Screen\GameOverScreen.cs" />
     <Compile Include="Screen\GameplayScreen.cs" />
     <Compile Include="Screen\LoadingScreen.cs" />
@@ -89,6 +88,7 @@
     <Compile Include="Screen\MessageBoxScreen.cs" />
     <Compile Include="Screen\PauseMenuScreen.cs" />
     <Compile Include="Screen\PlayerIndexEventArgs.cs" />
+    <Compile Include="Screen\TitleBackgroundScreen.cs" />
     <Compile Include="Utility\Collision.cs" />
     <Compile Include="Utility\Helper.cs" />
     <Compile Include="Manager\InputManager.cs" />
@@ -104,7 +104,6 @@
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
       <Visible>False</Visible>
