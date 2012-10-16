@@ -8,6 +8,5 @@ namespace Asteroids
         public virtual void Init    ()                        { }
         public virtual void Update  (GameTime dt)             { }
         public virtual void Draw    (SpriteBatch spriteBatch) { }
-        public virtual void OnEvent (Event e)                 { }
     }
 }

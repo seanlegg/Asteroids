@@ -10,7 +10,7 @@ namespace Asteroids
         private static NetworkManager instance;
 
         private NetworkSessionProperties sessionProperties;
-        private NetworkSession session;
+        public NetworkSession session;
 
         private AvailableNetworkSessionCollection availableSessions;
 
@@ -20,11 +20,7 @@ namespace Asteroids
 
         private NetworkManager()
         {
-            // Subscribe to Events
-            EventManager eventManager = EventManager.Instance;
 
-            eventManager.Subscribe(EventType.FIND_MULTIPLAYER_GAME, this);
-            eventManager.Subscribe(EventType.HOST_MULTIPLAYER_GAME, this);
         }
 
         public AvailableNetworkSessionCollection FindGames()
@@ -74,11 +70,6 @@ namespace Asteroids
         public void onGamerJoinSession(object sender, GamerJoinedEventArgs e)        
         {
             Console.WriteLine("A gamer has joined the session");
-        }
-
-        public override void OnEvent(Event e)
-        {
-            base.OnEvent(e);
         }
 
         #region singleton

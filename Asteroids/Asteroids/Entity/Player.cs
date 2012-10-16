@@ -9,6 +9,10 @@ namespace Asteroids
 {
     class Player : Collidable
     {
+        #region Fields
+
+        private PlayerIndex playerIndex;
+
         private SpriteFont font;
 
         private Texture2D ship_texture;
@@ -39,8 +43,12 @@ namespace Asteroids
         private const float respawnTime     = 1.0f;
         private const float spawnProtection = 2f;
 
-        public Player(ContentManager content)
+        #endregion
+
+        public Player(ContentManager content, PlayerIndex playerIndex)
         {
+            this.playerIndex = playerIndex;
+
             // Fonts
             font = content.Load<SpriteFont>("font/Segoe");
 
@@ -50,7 +58,7 @@ namespace Asteroids
 
             bullets = new List<Bullet>();
 
-            position = new Vector2((GameBase.config.ScreenWidth / 2) - (ship_texture.Width / 2), (GameBase.config.ScreenHeight / 2) - (ship_texture.Height / 2));
+            position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
             velocity = Vector2.Zero;
             origin = new Vector2(ship_texture.Width / 2, ship_texture.Height / 2);
 
@@ -58,6 +66,15 @@ namespace Asteroids
             speed    = 5.0f;
             isActive = true;
         }
+
+        #region Events 
+
+        /// <summary>
+        /// Event raised when the menu entry is selected.
+        /// </summary>
+        public event EventHandler<PlayerIndexEventArgs> onGameOver;
+
+        #endregion
 
         public override void Init()
         {
@@ -73,7 +90,7 @@ namespace Asteroids
             spawnProtectionTime = spawnProtection;
 
             velocity = Vector2.Zero;
-            position = new Vector2((GameBase.config.ScreenWidth / 2) - (ship_texture.Width / 2), (GameBase.config.ScreenHeight / 2) - (ship_texture.Height / 2));
+            position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
             rotation = 0.0f;
         }
 
@@ -85,7 +102,8 @@ namespace Asteroids
             if (lives <= 0)
             {
                 // Game Over
-                EventManager.Instance.Publish(new Event(EventType.GAME_OVER));
+                if (onGameOver != null)
+                    onGameOver(this, new PlayerIndexEventArgs(playerIndex));
             }
             else
             {
@@ -149,9 +167,6 @@ namespace Asteroids
                 spawnProtectionTime -= dt;
             }
 
-            // Process user input
-            UserInput(dt);   
-     
             // Update the position of the ship
             position += velocity;
 
@@ -182,10 +197,6 @@ namespace Asteroids
                 b.Draw(spriteBatch);
             });
 
-            //DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
-            //circle.CreateCircle(GetRadius(), 100);
-            //circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
-
             spriteBatch.Begin();
             {
                 // Render the player's ship
@@ -194,8 +205,6 @@ namespace Asteroids
                     spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
                 }
 
-                //circle.Render(spriteBatch);
-
                 // Render the HUD
                 spriteBatch.DrawString(font, "Lives: " + lives, new Vector2(0, 20), Color.Green);
                 spriteBatch.DrawString(font, "Score: " + score, new Vector2(0,  0), Color.Green);
@@ -203,13 +212,16 @@ namespace Asteroids
             spriteBatch.End();
           
             base.Draw(spriteBatch);
-        }   
+        }
 
-        public void UserInput(float dt)
+        public void HandleInput(InputState input, PlayerIndex playerIndex, GameTime gameTime)
         {
-            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (InputManager.Instance.IsKeyHeld(Keys.Up) || gamePadState.Triggers.Right > 0)
+            KeyboardState keyboardState = input.CurrentKeyboardStates[(int)playerIndex];
+            GamePadState  gamePadState  = input.CurrentGamePadStates[(int)playerIndex];
+
+            if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.Triggers.Right > 0)
             {
                 // Calculate the speed
                 float s = gamePadState.Triggers.Right > 0 ? gamePadState.Triggers.Right * speed : speed;
@@ -225,7 +237,7 @@ namespace Asteroids
                 velocity.Y *= (1.0f - drag);
             }
 
-            if (InputManager.Instance.IsKeyHeld(Keys.Down) || gamePadState.Triggers.Left > 0)
+            if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.Triggers.Left > 0)
             {
                 float b = gamePadState.Triggers.Left > 0 ? gamePadState.Triggers.Left * brake : brake;
 
@@ -233,12 +245,12 @@ namespace Asteroids
                 velocity.Y *= (1.0f - b);
             }
 
-            if (InputManager.Instance.IsKeyHeld(Keys.Left) || gamePadState.DPad.Left == ButtonState.Pressed)
+            if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.DPad.Left == ButtonState.Pressed)
             {
                 rotation -= rotationSpeed;
             }
 
-            if (InputManager.Instance.IsKeyHeld(Keys.Right) || gamePadState.DPad.Right == ButtonState.Pressed)
+            if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.DPad.Right == ButtonState.Pressed)
             {
                 rotation += rotationSpeed;
             }
@@ -248,9 +260,9 @@ namespace Asteroids
                 rotation += gamePadState.ThumbSticks.Left.X * rotationSpeed;
             }
 
-            if (InputManager.Instance.IsKeyPressed(Keys.Space) || InputManager.Instance.IsButtonPressed(Buttons.A))
+            if (input.IsNewKeyPress(Keys.Space, playerIndex, out playerIndex) || input.IsNewButtonPress(Buttons.A, playerIndex, out playerIndex))
             {
-                fire();
+               fire();
             }
         }
 

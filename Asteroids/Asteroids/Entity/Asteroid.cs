@@ -60,15 +60,9 @@ namespace Asteroids
         public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
             if (isActive == false) return;
-            
-            //DebugDraw circle = new DebugDraw(AsteroidsGame.graphics.GraphicsDevice);
-            //circle.CreateCircle(GetRadius(), 100);
-            //circle.Position = new Vector2(GetPosition().X, GetPosition().Y);
-            //circle.Colour = Color.Red;
 
             spriteBatch.Begin();
             spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
-            //circle.Render(spriteBatch);
             spriteBatch.End();
 
             base.Draw(spriteBatch);

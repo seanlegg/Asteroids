@@ -1,50 +1,61 @@
-﻿using System;
+﻿#region File Description
+//-----------------------------------------------------------------------------
+// PauseMenuScreen.cs
+//
+// Microsoft XNA Community Game Platform
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//-----------------------------------------------------------------------------
+#endregion
+
+#region Using Statements
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Net;
+#endregion
 
 namespace Asteroids
 {
+    /// <summary>
+    /// The pause menu comes up over the top of the game,
+    /// giving the player options to resume or quit.
+    /// </summary>
     class GameOverScreen : GameScreen
     {
-        private SpriteFont textFont;
-        private Text gameOverMessage;
+        #region Fields
 
-        public GameOverScreen(ContentManager content)
+        NetworkSession networkSession;
+
+        #endregion
+
+        #region Initialization
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public GameOverScreen(NetworkSession networkSession)
         {
-            textFont = content.Load<SpriteFont>("font/Menu");
-
-            gameOverMessage = new Text("Game Over", textFont);
+            this.networkSession = networkSession;
         }
 
-        public void Init()
+
+        #endregion
+
+        #region Update & Draw
+
+        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            
+            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
 
-        public void Shutdown()
+        public override void Draw(GameTime gameTime)
         {
-
+            base.Draw(gameTime);
         }
 
-        public override void Update(GameTime dt)
-        {
-            InputManager iManager = InputManager.Instance;
+        #endregion
 
-            if (iManager.IsKeyPressed(Keys.Enter) || iManager.IsButtonPressed(Buttons.Start))
-            {
-                EventManager.Instance.Publish(new Event(EventType.NAVIGATE_MAIN_MENU));
-            }
-        }
+        #region Handle Input
 
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Begin();
-            {
-                spriteBatch.DrawString(textFont, gameOverMessage.title, gameOverMessage.center, Color.Green);
-            }
-            spriteBatch.End();
-        }
+
+        #endregion
     }
 }

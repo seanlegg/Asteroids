@@ -8,20 +8,21 @@ namespace Asteroids
 
         public static Vector2 wrapUniverse(Vector2 position, int textureWidth, int textureHeight)
         {
+            // TODO: Remove magic numbers
             if (position.X + textureWidth < 0)
             {
-                position.X = GameBase.config.ScreenWidth;
+                position.X = 1280;
             }
-            else if (position.X > GameBase.config.ScreenWidth)
+            else if (position.X > 1280)
             {
                 position.X = -textureWidth;
             }
 
             if (position.Y + textureHeight < 0)
             {
-                position.Y = GameBase.config.ScreenHeight;
+                position.Y = 720;
             }
-            else if (position.Y > GameBase.config.ScreenHeight)
+            else if (position.Y > 720)
             {
                 position.Y = -textureHeight;
             }

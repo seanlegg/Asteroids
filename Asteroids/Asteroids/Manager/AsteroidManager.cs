@@ -45,8 +45,8 @@ namespace Asteroids
 
             Random rand = new Random();
 
-            int w = GameBase.config.ScreenWidth;
-            int h = GameBase.config.ScreenHeight;
+            int w = 1280;
+            int h = 720;
             int n = 1000;
 
             for (int i = 0; i < 5; i++)
@@ -56,7 +56,7 @@ namespace Asteroids
 
                 asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity));
             }
-        }
+        }         
 
         public void InitTitle()
         {
@@ -65,8 +65,8 @@ namespace Asteroids
 
             Random rand = new Random();
 
-            int w = GameBase.config.ScreenWidth;
-            int h = GameBase.config.ScreenHeight;
+            int w = 1280;
+            int h = 720;
             int n = 1000;
 
             for (int i = 0; i < 20; i++)
