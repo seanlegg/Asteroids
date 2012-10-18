@@ -69,6 +69,8 @@
     <Compile Include="Component\MessageDisplayComponent.cs" />
     <Compile Include="Entity\Asteroid.cs" />
     <Compile Include="AsteroidsGame.cs" />
+    <Compile Include="Event\OperationCompletedEventArgs.cs" />
+    <Compile Include="Event\PlayerIndexEventArgs.cs" />
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Entity\Bullet.cs" />
     <Compile Include="Base\Collidable.cs" />
@@ -86,8 +88,15 @@
     <Compile Include="Screen\MenuEntry.cs" />
     <Compile Include="Screen\MenuScreen.cs" />
     <Compile Include="Screen\MessageBoxScreen.cs" />
+    <Compile Include="Screen\Network\AvailableSessionMenuEntry.cs" />
+    <Compile Include="Screen\Network\CreateOrFindSessionScreen.cs" />
+    <Compile Include="Screen\Network\JoinSessionScreen.cs" />
+    <Compile Include="Screen\Network\LobbyScreen.cs" />
+    <Compile Include="Screen\Network\NetworkBusyScreen.cs" />
+    <Compile Include="Screen\Network\NetworkErrorScreen.cs" />
+    <Compile Include="Screen\Network\NetworkSessionComponent.cs" />
+    <Compile Include="Screen\Network\ProfileSignInScreen.cs" />
     <Compile Include="Screen\PauseMenuScreen.cs" />
-    <Compile Include="Screen\PlayerIndexEventArgs.cs" />
     <Compile Include="Screen\TitleBackgroundScreen.cs" />
     <Compile Include="Utility\Collision.cs" />
     <Compile Include="Utility\Helper.cs" />

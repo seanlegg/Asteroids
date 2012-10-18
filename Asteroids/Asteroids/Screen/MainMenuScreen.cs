@@ -85,7 +85,6 @@ namespace Asteroids
         void CreateOrFindSession(NetworkSessionType sessionType,
                                  PlayerIndex playerIndex)
         {
-            /*
             // First, we need to make sure a suitable gamer profile is signed in.
             ProfileSignInScreen profileSignIn = new ProfileSignInScreen(sessionType);
 
@@ -100,7 +99,6 @@ namespace Asteroids
 
             // Activate the ProfileSignInScreen.
             ScreenManager.AddScreen(profileSignIn, playerIndex);
-             * */
         }
 
 

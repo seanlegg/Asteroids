@@ -155,7 +155,14 @@ namespace Asteroids
         {
             GameOverScreen gameOverScreen = new GameOverScreen(networkSession);
 
-            ScreenManager.AddScreen(gameOverScreen, PlayerIndex.One);
+            if (networkSession == null)
+            {
+                ScreenManager.AddScreen(gameOverScreen, PlayerIndex.One);
+            }
+            else
+            {
+                Console.WriteLine("Multiplayer Game Over!");
+            }
         }
 
         #endregion
@@ -203,11 +210,9 @@ namespace Asteroids
             {
                 if (networkSession.SessionState == NetworkSessionState.Lobby)
                 {
-                    /*
                     LoadingScreen.Load(ScreenManager, true, null,
-                                       new BackgroundScreen(),
+                                       new TitleBackgroundScreen(),
                                        new LobbyScreen(networkSession));
-                     * */
                 }
             }
         }

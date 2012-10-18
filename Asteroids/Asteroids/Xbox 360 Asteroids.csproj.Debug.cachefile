@@ -4,11 +4,6 @@ Content\sprite\asteroid_large.xnb
 Content\sprite\asteroid_medium.xnb
 Content\sprite\asteroid_small.xnb
 Content\font\xboxControllerSpriteFont.xnb
-Content\sprite\network\chatAble.xnb
-Content\sprite\network\chatMute.xnb
-Content\sprite\network\chatTalking.xnb
-Content\sprite\network\local.xnb
-Content\sprite\network\ready.xnb
 Content\background\background.xnb
 Content\sprite\blank.xnb
 Content\sprite\gradient.xnb
@@ -16,3 +11,8 @@ Content\font\Segoe.xnb
 Content\font\Menu.xnb
 Content\font\gamefont.xnb
 Content\font\menufont.xnb
+Content\sprite\cat.xnb
+Content\sprite\network\chat_able.xnb
+Content\sprite\network\chat_mute.xnb
+Content\sprite\network\chat_ready.xnb
+Content\sprite\network\chat_talking.xnb

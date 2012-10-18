@@ -117,7 +117,7 @@ namespace Asteroids
         /// </summary>
         void LeaveSessionMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            //NetworkSessionComponent.LeaveSession(ScreenManager, e.PlayerIndex);
+            NetworkSessionComponent.LeaveSession(ScreenManager, e.PlayerIndex);
         }
 
 
