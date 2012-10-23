@@ -38,8 +38,9 @@ namespace Asteroids
         private int lives = 3;
         private int score = 0;
 
-        private float timeTillRespawn     = 0f;
-        private float spawnProtectionTime = 0f;
+        private float timeTillRespawn        = 0f;
+        private float spawnProtectionTime    = 0f;
+        private float gameOverExplosionTimer = 1f;
 
         // Constants
         private const float drag            = 0.005f;
@@ -100,7 +101,9 @@ namespace Asteroids
 
         public override void Init()
         {
-            lives = 5;
+            lives = 3;
+
+            gameOverExplosionTimer = 1f;
 
             base.Init();
         }
@@ -114,9 +117,6 @@ namespace Asteroids
             velocity = Vector2.Zero;
             position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
             rotation = 0.0f;
-
-            // Reset the explosion particle state
-            
         }
 
         public void DecrementLives()
@@ -183,11 +183,17 @@ namespace Asteroids
 
             if (isActive == false)
             {
+                if (lives == 0)
+                {
+                    gameOverExplosionTimer -= dt;
+                    if (gameOverExplosionTimer < 0f)
+                        return;
+                }
                 // Trigger an explosion particle effect
                 explosionEffect.Trigger(position);
                 
                 timeTillRespawn -= dt;
-                if (timeTillRespawn <= 0)
+                if (lives > 0 && timeTillRespawn <= 0)
                 {
                     Respawn();
                 }
@@ -240,7 +246,7 @@ namespace Asteroids
                     spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
                 }
 
-                // Render particles
+                // Render explosion
                 particleRenderer.RenderEffect(explosionEffect);
 
                 // Render the HUD

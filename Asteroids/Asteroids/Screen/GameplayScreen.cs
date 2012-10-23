@@ -60,7 +60,7 @@ namespace Asteroids
         {
             get
             {
-                if (networkSession == null)
+                if (networkSession == null && !IsSinglePlayerGameOver)
                 {
                     // Pause behavior for single player games.
                     return base.IsActive;
@@ -73,6 +73,10 @@ namespace Asteroids
             }
         }
 
+        bool IsSinglePlayerGameOver
+        {
+            get { return players[0].Lives == 0; }
+        }
 
         #endregion
 
@@ -294,10 +298,8 @@ namespace Asteroids
         /// </summary>
         public override void Draw(GameTime gameTime)
         {
-            // This game has a blue background. Why? Because!
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
-            // Our player and enemy are both actually just text strings.
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             // Render Players
