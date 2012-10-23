@@ -53,6 +53,25 @@ namespace Asteroids
 
         public override void HandleCollision(Asteroid a)
         {
+            if (isActive)
+            {
+                // Increment the players score
+                if (owner != null)
+                {
+                    switch (a.Type)
+                    {
+                        case AsteroidType.SMALL:
+                            owner.Score += 100;
+                            break;
+                        case AsteroidType.MEDIUM:
+                            owner.Score += 75;
+                            break;
+                        case AsteroidType.LARGE:
+                            owner.Score += 50;                            
+                            break;
+                    }
+                }
+            }
             isActive = false;
         }
 

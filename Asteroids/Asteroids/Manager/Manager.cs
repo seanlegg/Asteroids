@@ -7,5 +7,6 @@ namespace Asteroids
 {
     class Manager : Base
     {
+
     }
 }

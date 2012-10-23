@@ -5,8 +5,6 @@ namespace Asteroids
 {
     class Collidable : Base
     {
-        public bool isActive;
-
         // Bounding Sphere
         public virtual Vector3 GetPosition() { return Vector3.Zero; }
         public virtual int     GetRadius()   { return 0; }

@@ -41,6 +41,8 @@ namespace Asteroids
         private List<Player> players;
         private AsteroidManager asteroidManager;
 
+        private int level;
+
         #endregion
 
         #region Properties
@@ -124,6 +126,9 @@ namespace Asteroids
 
         public void InitGame()
         {
+            // Set the starting level
+            level = 1;
+
             // Initialize Asteroids
             asteroidManager.Init();
 
@@ -201,6 +206,12 @@ namespace Asteroids
                 // Update Asteroids
                 asteroidManager.Update(gameTime);
 
+                // See if we need to increment the level
+                if (asteroidManager.Asteroids.Count == 0)
+                {
+                    asteroidManager.StartLevel(level++);
+                }
+
                 // Handle collision detection
                 CheckCollisions();
             }
@@ -210,7 +221,7 @@ namespace Asteroids
             {
                 if (networkSession.SessionState == NetworkSessionState.Lobby)
                 {
-                    LoadingScreen.Load(ScreenManager, true, null,
+                    LoadingScreen.Load(ScreenManager, false, null,
                                        new TitleBackgroundScreen(),
                                        new LobbyScreen(networkSession));
                 }

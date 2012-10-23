@@ -9,6 +9,7 @@ namespace Asteroids
 
         protected Vector2 position = Vector2.Zero;
         protected Vector2 velocity = Vector2.Zero;
+
         protected float timeToLive;
         protected float speed;
     }

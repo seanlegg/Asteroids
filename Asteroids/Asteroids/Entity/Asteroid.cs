@@ -77,8 +77,6 @@ namespace Asteroids
 
         public override void HandleCollision(Bullet b)
         {
-            Console.WriteLine("Asteroid was hit by a bullet.");
-
             isActive = false;
         }
 

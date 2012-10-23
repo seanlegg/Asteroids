@@ -64,7 +64,29 @@ namespace Asteroids
 
                 asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
             }
-        }         
+        }
+
+        public void StartLevel(int level)
+        {
+            // Remove any existing asteroids
+            asteroids.Clear();
+
+            // TODO: Remove Magic Numbers
+            int w = 1280;
+            int h = 720;
+            int n = 1000;
+
+            for (int i = 0; i < (level*5); i++)
+            {
+                Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));     
+                Vector2 velocity = new Vector2((float)Math.Sin(rand.Next(0, level)), (float)Math.Cos(rand.Next(0, level)));
+
+                float rotation      = rand.Next(0, 359);
+                float rotationSpeed = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
+
+                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
+            }
+        }
 
         public void InitTitle()
         {
@@ -115,15 +137,18 @@ namespace Asteroids
         {
             Asteroid a = null, b = null;
 
+            Vector2 v1 = new Vector2( (float) Math.Sin(rand.Next()), (float) Math.Cos(rand.Next()) );
+            Vector2 v2 = new Vector2( (float) Math.Sin(rand.Next()), (float) Math.Cos(rand.Next()) );
+
             if (type == AsteroidType.MEDIUM)
             {
-                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
-                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
+                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v1, 0.0f, 0.0f);
+                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v2, 0.0f, 0.0f);
             } 
             else if (type == AsteroidType.SMALL)
             {
-                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
-                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, new Vector2(rand.Next(0, 2), rand.Next(0, 2)), 0.0f, 0.0f);
+                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v1, 0.0f, 0.0f);
+                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v2, 0.0f, 0.0f);
             }
             asteroids.Add(a);
             asteroids.Add(b);

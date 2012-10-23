@@ -5,6 +5,12 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+// Project Mercury Particle System
+using ProjectMercury;
+using ProjectMercury.Renderers;
+using ProjectMercury.Modifiers;
+using ProjectMercury.Emitters;
+
 namespace Asteroids
 {
     class Player : Collidable
@@ -43,6 +49,10 @@ namespace Asteroids
         private const float respawnTime     = 1.0f;
         private const float spawnProtection = 2f;
 
+        // Particle System
+        ParticleEffect explosionEffect;
+        Renderer particleRenderer;
+
         #endregion
 
         public Player(ContentManager content, PlayerIndex playerIndex)
@@ -65,6 +75,18 @@ namespace Asteroids
             rotation = 0.0f;
             speed    = 5.0f;
             isActive = true;
+
+            // Explosion Particle Effect
+            particleRenderer = new SpriteBatchRenderer
+            {
+                GraphicsDeviceService = AsteroidsGame.graphics
+            };
+            particleRenderer.LoadContent(content);
+
+            explosionEffect = new ParticleEffect();
+            explosionEffect = content.Load<ParticleEffect>("effect/Explosion");
+            explosionEffect.LoadContent(content);
+            explosionEffect.Initialise();
         }
 
         #region Events 
@@ -78,7 +100,7 @@ namespace Asteroids
 
         public override void Init()
         {
-            lives = 3;
+            lives = 5;
 
             base.Init();
         }
@@ -92,6 +114,9 @@ namespace Asteroids
             velocity = Vector2.Zero;
             position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
             rotation = 0.0f;
+
+            // Reset the explosion particle state
+            
         }
 
         public void DecrementLives()
@@ -103,7 +128,9 @@ namespace Asteroids
             {
                 // Game Over
                 if (onGameOver != null)
+                {
                     onGameOver(this, new PlayerIndexEventArgs(playerIndex));
+                }
             }
             else
             {
@@ -151,8 +178,14 @@ namespace Asteroids
         {
             float dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
+            // Update Particles
+            explosionEffect.Update(dt);
+
             if (isActive == false)
             {
+                // Trigger an explosion particle effect
+                explosionEffect.Trigger(position);
+                
                 timeTillRespawn -= dt;
                 if (timeTillRespawn <= 0)
                 {
@@ -191,6 +224,8 @@ namespace Asteroids
 
         public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
+            int i;
+
             // Render the player's bullets
             bullets.ForEach(delegate(Bullet b)
             {
@@ -205,13 +240,17 @@ namespace Asteroids
                     spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
                 }
 
+                // Render particles
+                particleRenderer.RenderEffect(explosionEffect);
+
                 // Render the HUD
-                spriteBatch.DrawString(font, "Lives: " + lives, new Vector2(0, 20), Color.Green);
-                spriteBatch.DrawString(font, "Score: " + score, new Vector2(0,  0), Color.Green);
+                for (i = 0; i < lives; i++)
+                {
+                    spriteBatch.Draw(ship_texture, new Vector2(ship_texture.Width + (i * ship_texture.Width)+(i*10), ship_texture.Height), Color.White);
+                }
+                spriteBatch.DrawString(font, "Score: " + score, new Vector2(ship_texture.Width,0), Color.White);
             }
             spriteBatch.End();
-          
-            base.Draw(spriteBatch);
         }
 
         public void HandleInput(InputState input, PlayerIndex playerIndex, GameTime gameTime)
@@ -309,6 +348,12 @@ namespace Asteroids
         {
             get;
             set;
+        }
+
+        public int Score
+        {
+            get { return score; }
+            set { this.score = value; }
         }
 
         public float Rotation
