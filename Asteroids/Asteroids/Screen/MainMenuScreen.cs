@@ -56,8 +56,7 @@ namespace Asteroids
         /// </summary>
         void SinglePlayerMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex,
-                               new GameplayScreen(null));
+            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen(null));
         }
 
 

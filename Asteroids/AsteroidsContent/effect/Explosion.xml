@@ -4,7 +4,7 @@
     <Item Type="ProjectMercury.Emitters.CircleEmitter">
       <Name>Smoke Trail</Name>
       <Budget>500</Budget>
-      <Term>1.0</Term>
+      <Term>0.5</Term>
       <ReleaseQuantity>16</ReleaseQuantity>
       <Enabled>True</Enabled>
       <ReleaseSpeed>

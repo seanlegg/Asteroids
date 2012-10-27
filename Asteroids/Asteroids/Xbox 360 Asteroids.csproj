@@ -74,7 +74,6 @@
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Entity\Bullet.cs" />
     <Compile Include="Base\Collidable.cs" />
-    <Compile Include="Manager\NetworkManager.cs" />
     <Compile Include="Manager\ScreenManager\InputState.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

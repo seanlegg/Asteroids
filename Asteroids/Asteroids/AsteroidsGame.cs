@@ -99,7 +99,6 @@ namespace Asteroids
             if (isRunning == false)
                 this.Exit();
 
-
             base.Update(gameTime);
         }
 
@@ -110,8 +109,6 @@ namespace Asteroids
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-
-
 
             base.Draw(gameTime);
         }

@@ -137,6 +137,10 @@ namespace Asteroids
         {
             Asteroid a = null, b = null;
 
+            // BUG (360 ONLY)
+            //float r1 = rand.Next();
+            //float s  = (float) Math.Sin(r1);
+
             Vector2 v1 = new Vector2( (float) Math.Sin(rand.Next()), (float) Math.Cos(rand.Next()) );
             Vector2 v2 = new Vector2( (float) Math.Sin(rand.Next()), (float) Math.Cos(rand.Next()) );
 

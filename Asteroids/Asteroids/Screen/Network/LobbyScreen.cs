@@ -87,8 +87,7 @@ namespace Asteroids
                     // We pass null as the controlling player, because the networked
                     // gameplay screen accepts input from any local players who
                     // are in the session, not just a single controlling player.
-                    LoadingScreen.Load(ScreenManager, false, null,
-                                       new GameplayScreen(networkSession));
+                    LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen(networkSession));
                 }
                 else if (networkSession.IsHost && networkSession.IsEveryoneReady)
                 {

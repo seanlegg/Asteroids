@@ -29,7 +29,10 @@ namespace Asteroids
     {
         #region Fields
 
+        // Networking
         NetworkSession networkSession;
+        PacketReader packetReader = new PacketReader();
+        PacketWriter packetWriter = new PacketWriter();
 
         ContentManager content;
         SpriteFont gameFont;
@@ -60,7 +63,11 @@ namespace Asteroids
         {
             get
             {
-                if (networkSession == null && !IsSinglePlayerGameOver)
+                if (IsSinglePlayerGameOver == true)
+                {
+                    return !IsExiting;
+                }
+                else if (networkSession == null)
                 {
                     // Pause behavior for single player games.
                     return base.IsActive;
@@ -75,7 +82,14 @@ namespace Asteroids
 
         bool IsSinglePlayerGameOver
         {
-            get { return players[0].Lives == 0; }
+            get 
+            {
+                if (networkSession != null)
+                {
+                    return false;
+                }
+                return players[(int)ControllingPlayer].Lives == 0; 
+            }
         }
 
         #endregion
@@ -93,7 +107,7 @@ namespace Asteroids
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);            
 
-            players = new List<Player>();            
+            players = new List<Player>();
         }
 
 
@@ -109,15 +123,34 @@ namespace Asteroids
 
             asteroidManager = new AsteroidManager(content, Mode.GAME);
 
-            Player p = new Player(content, PlayerIndex.One);
-            p.onGameOver += OnGameOver;
+            // Create the players ship
+            if (networkSession == null)
+            {
+                Player p = new Player(content, ControllingPlayer);
+                p.onGameOver += OnGameOver;
 
-            players.Add(p);
+                players.Add(p);
+            }
+            
+            /*
+            else
+            {
+
+                foreach (NetworkGamer gamer in networkSession.LocalGamers)
+                {
+                    Player p = new Player(content, PlayerIndex.One);
+                    p.onGameOver += OnGameOver;
+
+                    players.Add(p);
+                }
+                Console.WriteLine("Players.length = " + players.Count);
+            }
+            */
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
             // while, giving you a chance to admire the beautiful loading screen.
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
 
             // Initialize the game
             InitGame();
@@ -166,12 +199,56 @@ namespace Asteroids
 
             if (networkSession == null)
             {
-                ScreenManager.AddScreen(gameOverScreen, PlayerIndex.One);
+                ScreenManager.AddScreen(gameOverScreen, ControllingPlayer);
             }
             else
             {
                 Console.WriteLine("Multiplayer Game Over!");
             }
+        }
+
+        #endregion
+
+        #region Network
+
+        void ReceiveNetworkData(LocalNetworkGamer gamer)
+        {
+
+            // Keep reading as long as incoming packets are available.
+            while (gamer.IsDataAvailable)
+            {
+                NetworkGamer sender;
+
+                // Read a single packet from the network.
+                gamer.ReceiveData(packetReader, out sender);
+
+                // Discard packets sent by local gamers: we already know their state!
+                if (sender.IsLocal)
+                    continue;
+
+                // Look up the tank associated with whoever sent this packet.
+                Player remotePlayer = sender.Tag as Player;
+
+                // Read the state of this tank from the network packet.
+                remotePlayer.Position = packetReader.ReadVector2();
+                remotePlayer.Velocity = packetReader.ReadVector2();
+                remotePlayer.Rotation = packetReader.ReadDouble();
+
+                Console.WriteLine("Player Position = " + remotePlayer.Position.ToString());
+            }
+        }
+
+        void SendNetworkData(LocalNetworkGamer gamer)
+        {
+            Player p = gamer.Tag as Player;
+
+            // Write the player data
+            packetWriter.Write(p.Position);
+            packetWriter.Write(p.Velocity);
+            packetWriter.Write(p.Rotation);
+
+            // Send the data to everyone in the session.
+            gamer.SendData(packetWriter, SendDataOptions.InOrder);
         }
 
         #endregion
@@ -196,7 +273,29 @@ namespace Asteroids
             if (IsActive)
             {
                 if (networkSession != null)
-                {
+                {                    
+                    foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+                    {
+                        // Send Network Data
+                        SendNetworkData(gamer);
+                    }
+
+                    // Update the network session object
+                    networkSession.Update();
+
+                    foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+                    {
+                        ReceiveNetworkData(gamer);
+                    }
+
+                    // Update local players
+                    foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+                    {
+                        Player p = gamer.Tag as Player;
+
+                        p.Update(gameTime);
+                    }
+
                     players.ForEach(delegate(Player p)
                     {
                         p.Update(gameTime);
@@ -204,7 +303,7 @@ namespace Asteroids
                 }
                 else
                 {
-                    players[(int)PlayerIndex.One].Update(gameTime);
+                    players[(int)ControllingPlayer].Update(gameTime);
                 }
 
                 // Update Asteroids
@@ -287,8 +386,16 @@ namespace Asteroids
             }
 
             // Handle Player Input
-            players[(int)playerIndex].HandleInput(input, playerIndex, gameTime);
+            if (networkSession == null)
+            {
+                players[(int)playerIndex].HandleInput(input, playerIndex, gameTime);
+            }
+            else
+            {
+                Player p = networkSession.LocalGamers[(int)playerIndex].Tag as Player;
 
+                p.HandleInput(input, playerIndex, gameTime);
+            }
             return true;
         }
 
@@ -303,10 +410,21 @@ namespace Asteroids
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             // Render Players
-            players.ForEach(delegate(Player p)
+            if (networkSession == null)
             {
-                p.Draw(spriteBatch);
-            });
+                players.ForEach(delegate(Player p)
+                {
+                    p.Draw(spriteBatch);
+                });
+            }
+            else
+            {
+                foreach (NetworkGamer gamer in networkSession.AllGamers)
+                {
+                    Player p = gamer.Tag as Player;
+                    p.Draw(spriteBatch);
+                }                
+            }
 
             // Render Asteroids
             asteroidManager.Draw(spriteBatch);   
@@ -331,10 +449,10 @@ namespace Asteroids
             }
         }
 
-
         #endregion
 
         #region Collision Detection
+
         public void CheckCollisions()
         {
             asteroidManager.Asteroids.ForEach(delegate(Asteroid a)
@@ -365,6 +483,7 @@ namespace Asteroids
                 });
             });
         }
+
         #endregion
     }
 }

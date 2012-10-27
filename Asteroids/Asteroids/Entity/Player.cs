@@ -17,6 +17,7 @@ namespace Asteroids
     {
         #region Fields
 
+        private byte Id;
         private PlayerIndex playerIndex;
 
         private SpriteFont font;
@@ -26,14 +27,12 @@ namespace Asteroids
 
         private List<Bullet> bullets;
 
-        private KeyboardState prevKeyboardState;
-
         private Vector2 origin;
         private Vector2 position;
         private Vector2 velocity;
 
         private float speed;
-        private float rotation;
+        private double rotation;
 
         private int lives = 3;
         private int score = 0;
@@ -51,14 +50,20 @@ namespace Asteroids
         private const float spawnProtection = 2f;
 
         // Particle System
-        ParticleEffect explosionEffect;
         Renderer particleRenderer;
+
+        // Particle States
+        private bool isThrustEnabled = false;
+
+        // Particle Effects
+        ParticleEffect explosionEffect;
+        ParticleEffect thrustEffect;
 
         #endregion
 
-        public Player(ContentManager content, PlayerIndex playerIndex)
+        public Player(ContentManager content, PlayerIndex? playerIndex)
         {
-            this.playerIndex = playerIndex;
+            this.playerIndex = playerIndex.Value;
 
             // Fonts
             font = content.Load<SpriteFont>("font/Segoe");
@@ -77,18 +82,26 @@ namespace Asteroids
             speed    = 5.0f;
             isActive = true;
 
-            // Explosion Particle Effect
+            // Create Particle Renderer
             particleRenderer = new SpriteBatchRenderer
             {
                 GraphicsDeviceService = AsteroidsGame.graphics
             };
             particleRenderer.LoadContent(content);
 
+            // Load Particle Effects
             explosionEffect = new ParticleEffect();
             explosionEffect = content.Load<ParticleEffect>("effect/Explosion");
             explosionEffect.LoadContent(content);
             explosionEffect.Initialise();
         }
+
+        /*
+        public Player(ContentManager content, byte Id)
+        {
+            this.Id = Id;
+        }
+         */
 
         #region Events 
 
@@ -103,7 +116,11 @@ namespace Asteroids
         {
             lives = 3;
 
+            // Reset timers
             gameOverExplosionTimer = 1f;
+
+            // Reset the particle states
+            isThrustEnabled = false;
 
             base.Init();
         }
@@ -137,6 +154,8 @@ namespace Asteroids
                 timeTillRespawn = respawnTime;                
             }
         }
+
+        #region Collision Detection Handlers
 
         public override void HandleCollision(Player p)
         {
@@ -174,7 +193,9 @@ namespace Asteroids
             } 
         }
 
-        public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        #endregion
+
+        public override void Update(GameTime gameTime)
         {
             float dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -183,12 +204,14 @@ namespace Asteroids
 
             if (isActive == false)
             {
+                // Only allow the explosion particles to update for a short amount of time in the GameOver state
                 if (lives == 0)
                 {
                     gameOverExplosionTimer -= dt;
                     if (gameOverExplosionTimer < 0f)
                         return;
                 }
+
                 // Trigger an explosion particle effect
                 explosionEffect.Trigger(position);
                 
@@ -198,6 +221,12 @@ namespace Asteroids
                     Respawn();
                 }
                 return;
+            }
+
+            // Trigger Thrust Particles
+            if (isThrustEnabled)
+            {
+                explosionEffect.Trigger(position - velocity);
             }
 
             // Spawn Protection
@@ -223,12 +252,10 @@ namespace Asteroids
             // Wrap the screen
             position = Helper.wrapUniverse(position, ship_texture.Width, ship_texture.Height);
 
-            prevKeyboardState = Keyboard.GetState();
-
             base.Update(gameTime);
         }
 
-        public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             int i;
 
@@ -243,11 +270,17 @@ namespace Asteroids
                 // Render the player's ship
                 if (isActive)
                 {
-                    spriteBatch.Draw(ship_texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+                    spriteBatch.Draw(ship_texture, position, null, Color.White, (float)rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
                 }
 
                 // Render explosion
                 particleRenderer.RenderEffect(explosionEffect);
+
+                // Thrust Particles
+                if (isThrustEnabled)
+                {
+                    // TODO: Render Thrust Particles
+                }
 
                 // Render the HUD
                 for (i = 0; i < lives; i++)
@@ -263,8 +296,8 @@ namespace Asteroids
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            KeyboardState keyboardState = input.CurrentKeyboardStates[(int)playerIndex];
-            GamePadState  gamePadState  = input.CurrentGamePadStates[(int)playerIndex];
+            KeyboardState keyboardState = input.CurrentKeyboardStates [(int)playerIndex];
+            GamePadState  gamePadState  = input.CurrentGamePadStates  [(int)playerIndex];
 
             if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.Triggers.Right > 0)
             {
@@ -277,9 +310,15 @@ namespace Asteroids
                 );
                 velocity.X = MathHelper.Clamp(velocity.X, -speed, speed);
                 velocity.Y = MathHelper.Clamp(velocity.Y, -speed, speed);
+
+                // Enable the thrust particle state
+                isThrustEnabled = true;
             } else {
                 velocity.X *= (1.0f - drag);
                 velocity.Y *= (1.0f - drag);
+
+                // Disable the thrust particle state
+                isThrustEnabled = false;
             }
 
             if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.Triggers.Left > 0)
@@ -307,18 +346,17 @@ namespace Asteroids
 
             if (input.IsNewKeyPress(Keys.Space, playerIndex, out playerIndex) || input.IsNewButtonPress(Buttons.A, playerIndex, out playerIndex))
             {
-               fire();
+               Fire();
             }
         }
 
-        public void fire()
+        public void Fire()
         {
             bullets.Add(new Bullet(bullet_texture, this));
         }
 
-        /**
-         * Collision Detection Overrides
-         */
+        #region Collision Detection
+
         public override Vector3 GetPosition()
         {
             float xOffset = ship_texture.Width / 2;
@@ -331,6 +369,8 @@ namespace Asteroids
         {
             return (ship_texture.Width > ship_texture.Height ? ship_texture.Width : ship_texture.Height) / 2;
         }
+
+        #endregion
 
         #region Getters & Setters
 
@@ -350,10 +390,15 @@ namespace Asteroids
             set { position = value; }
         }
 
+        public Vector2 Velocity
+        {
+            get { return velocity; }
+            set { velocity = value; }
+        }
+
         public int Lives
         {
-            get;
-            set;
+            get { return lives; }
         }
 
         public int Score
@@ -362,9 +407,10 @@ namespace Asteroids
             set { this.score = value; }
         }
 
-        public float Rotation
+        public double Rotation
         {
             get { return rotation; }
+            set { rotation = value; }
         }
 
         public int Width

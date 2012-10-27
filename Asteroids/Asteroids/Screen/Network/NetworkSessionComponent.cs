@@ -167,6 +167,12 @@ namespace Asteroids
         /// </summary>
         void GamerJoined(object sender, GamerJoinedEventArgs e)
         {
+            int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
+
+            e.Gamer.Tag = new Player(Game.Content, 0);
+
+            Console.WriteLine("Gamer Joined");
+
             if (notifyWhenPlayersJoinOrLeave)
             {
                 messageDisplay.ShowMessage(Resources.MessageGamerJoined,
