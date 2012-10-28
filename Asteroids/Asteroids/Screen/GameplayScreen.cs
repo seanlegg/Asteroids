@@ -170,10 +170,22 @@ namespace Asteroids
             asteroidManager.Init();
 
             // Initialize Players
-            players.ForEach(delegate(Player p)
+            if (networkSession == null)
             {
-                p.Init();
-            });
+                players.ForEach(delegate(Player p)
+                {
+                    p.Init();
+                });
+            }
+            else
+            {
+                foreach (NetworkGamer gamer in networkSession.AllGamers)
+                {
+                    Player p = gamer.Tag as Player;
+
+                    p.Init();
+                }
+            }
         }
 
 
@@ -213,7 +225,6 @@ namespace Asteroids
 
         void ReceiveNetworkData(LocalNetworkGamer gamer)
         {
-
             // Keep reading as long as incoming packets are available.
             while (gamer.IsDataAvailable)
             {
@@ -244,6 +255,20 @@ namespace Asteroids
                 {
                     remotePlayer.Firebullet(packetReader.ReadVector2(), packetReader.ReadVector2());
                 }
+
+                // Update the asteroid state
+                if (gamer.IsHost == false)
+                {
+                    int numberAsteroids = packetReader.ReadInt32();
+
+                    // Remove all the asteroids
+                    asteroidManager.Asteroids.Clear();
+
+                    for (int i = 0; i < numberAsteroids; i++)
+                    {
+                        asteroidManager.AddAsteroid((AsteroidType)packetReader.ReadInt32(), packetReader.ReadVector2(), packetReader.ReadVector2(), 0, 0);
+                    }
+                }
             }
         }
 
@@ -263,6 +288,21 @@ namespace Asteroids
             {
                 packetWriter.Write(p.Bullets[i].Position);
                 packetWriter.Write(p.Bullets[i].Velocity);
+            }
+
+            // Only the host should update the asteroids state
+            if (gamer.IsHost)
+            {
+                int numberAsteroids = asteroidManager.Asteroids.Count;
+
+                packetWriter.Write(numberAsteroids);
+
+                for (int i = 0; i < numberAsteroids; i++)
+                {
+                    packetWriter.Write((int)asteroidManager.Asteroids[i].Type);
+                    packetWriter.Write(asteroidManager.Asteroids[i].Position);
+                    packetWriter.Write(asteroidManager.Asteroids[i].Velocity);
+                }
             }
 
             // Send the data to everyone in the session.
@@ -493,7 +533,7 @@ namespace Asteroids
 
         public void CheckMultiplayerCollisions()
         {
-            foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+            foreach (NetworkGamer gamer in networkSession.AllGamers)
             {
                 Player p = gamer.Tag as Player;
 
@@ -512,12 +552,6 @@ namespace Asteroids
                         if (Collision.BoundingSphere(b, a))
                         {
                             asteroidManager.HandleCollision(a, b);
-                        }
-
-                        // Bullets - Players
-                        if (Collision.BoundingSphere(b, p))
-                        {
-                            p.HandleCollision(b);
                         }
                     });
                 });

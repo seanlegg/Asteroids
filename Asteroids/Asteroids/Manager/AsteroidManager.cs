@@ -133,6 +133,13 @@ namespace Asteroids
             });
         }
 
+        public void AddAsteroid(AsteroidType type, Vector2 position, Vector2 velocity, float rotation, float rotationSpeed)
+        {
+            Texture2D texture = (type == AsteroidType.LARGE ? texture_large : (type == AsteroidType.MEDIUM ? texture_medium : texture_small));
+
+            asteroids.Add(new Asteroid(AsteroidType.LARGE, texture, position, velocity, rotation, rotationSpeed));
+        }
+
         public void SplitAsteroid(Asteroid parent, AsteroidType type)
         {
             Asteroid a = null, b = null;
