@@ -229,23 +229,41 @@ namespace Asteroids
                 // Look up the tank associated with whoever sent this packet.
                 Player remotePlayer = sender.Tag as Player;
 
-                // Read the state of this tank from the network packet.
+                // Read the state of this player from the network packet.
                 remotePlayer.Position = packetReader.ReadVector2();
                 remotePlayer.Velocity = packetReader.ReadVector2();
                 remotePlayer.Rotation = packetReader.ReadDouble();
 
-                Console.WriteLine("Player Position = " + remotePlayer.Position.ToString());
+                // Bullets
+                int numBullets = packetReader.ReadInt32();
+
+                // Clear Current Bullets
+                remotePlayer.Bullets.Clear();
+
+                for (int i = 0; i < numBullets; i++)
+                {
+                    remotePlayer.Firebullet(packetReader.ReadVector2(), packetReader.ReadVector2());
+                }
             }
         }
 
         void SendNetworkData(LocalNetworkGamer gamer)
         {
-            Player p = gamer.Tag as Player;
+            Player p = gamer.Tag as Player;            
 
             // Write the player data
             packetWriter.Write(p.Position);
             packetWriter.Write(p.Velocity);
             packetWriter.Write(p.Rotation);
+
+            // Bullet Data
+            packetWriter.Write(p.Bullets.Count);
+
+            for (int i = 0; i < p.Bullets.Count; i++)
+            {
+                packetWriter.Write(p.Bullets[i].Position);
+                packetWriter.Write(p.Bullets[i].Velocity);
+            }
 
             // Send the data to everyone in the session.
             gamer.SendData(packetWriter, SendDataOptions.InOrder);
@@ -296,10 +314,21 @@ namespace Asteroids
                         p.Update(gameTime);
                     }
 
-                    players.ForEach(delegate(Player p)
+                    // Update remote players
+                    foreach (NetworkGamer gamer in networkSession.RemoteGamers)
                     {
+                        Player p = gamer.Tag as Player;
+
                         p.Update(gameTime);
-                    });
+                    }
+
+                    if (networkSession == null)
+                    {
+                        players.ForEach(delegate(Player p)
+                        {
+                            p.Update(gameTime);
+                        });
+                    }
                 }
                 else
                 {
@@ -316,7 +345,14 @@ namespace Asteroids
                 }
 
                 // Handle collision detection
-                CheckCollisions();
+                if (networkSession == null)
+                {
+                    CheckCollisions();
+                }
+                else
+                {
+                    CheckMultiplayerCollisions();
+                }
             }
 
             // If we are in a network game, check if we should return to the lobby.
@@ -392,6 +428,8 @@ namespace Asteroids
             }
             else
             {
+                if ((int)playerIndex >= networkSession.LocalGamers.Count) return true;
+
                 Player p = networkSession.LocalGamers[(int)playerIndex].Tag as Player;
 
                 p.HandleInput(input, playerIndex, gameTime);
@@ -452,6 +490,39 @@ namespace Asteroids
         #endregion
 
         #region Collision Detection
+
+        public void CheckMultiplayerCollisions()
+        {
+            foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+            {
+                Player p = gamer.Tag as Player;
+
+                asteroidManager.Asteroids.ForEach(delegate(Asteroid a)
+                {
+                    // Check for collisions between Asteroids and Players
+                    if (Collision.BoundingSphere(a, p) == true)
+                    {
+                        asteroidManager.HandleCollision(a, p);
+                    }
+
+                    // Check for collisions with bullets
+                    p.Bullets.ForEach(delegate(Bullet b)
+                    {
+                        // Bullets - Asteroids
+                        if (Collision.BoundingSphere(b, a))
+                        {
+                            asteroidManager.HandleCollision(a, b);
+                        }
+
+                        // Bullets - Players
+                        if (Collision.BoundingSphere(b, p))
+                        {
+                            p.HandleCollision(b);
+                        }
+                    });
+                });
+            }
+        }
 
         public void CheckCollisions()
         {

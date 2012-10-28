@@ -350,6 +350,15 @@ namespace Asteroids
             }
         }
 
+        public void Firebullet(Vector2 position, Vector2 velocity)
+        {
+            Bullet b = new Bullet(bullet_texture, this);
+            b.Position = position;
+            b.Velocity = velocity;
+
+            bullets.Add(b);
+        }
+
         public void Fire()
         {
             bullets.Add(new Bullet(bullet_texture, this));

@@ -95,5 +95,17 @@ namespace Asteroids
         {
             get { return this.owner; }
         }
+
+        public Vector2 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
+        public Vector2 Velocity
+        {
+            get { return velocity; }
+            set { velocity = value; }
+        }
     }
 }
