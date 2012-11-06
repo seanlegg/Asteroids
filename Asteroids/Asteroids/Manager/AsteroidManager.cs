@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,6 +19,13 @@ namespace Asteroids
         #region Constants
 
         private const int max_asteroids_title = 15;
+
+        #endregion
+
+        #region Sound Effects
+
+        SoundEffect asteroid_hit;
+        SoundEffect asteroid_hit_bullet;
 
         #endregion
 
@@ -40,9 +48,14 @@ namespace Asteroids
 
             asteroids = new List<Asteroid>();
 
+            // Textures
             texture_small  = content.Load<Texture2D>("sprite/asteroid_small");
             texture_medium = content.Load<Texture2D>("sprite/asteroid_medium");
             texture_large  = content.Load<Texture2D>("sprite/asteroid_large");
+
+            // Sounds
+            asteroid_hit = content.Load<SoundEffect>("sound/asteroid_impact");
+            asteroid_hit_bullet = content.Load<SoundEffect>("sound/asteroid_impact_bullet");
 
             if (mode == Mode.TITLE)
             {
@@ -180,11 +193,17 @@ namespace Asteroids
 
         public void HandleCollision(Asteroid a, Player p) 
         {
+            // Make sure the asteroid is active
+            if (a.isActive == false) return;
+
             // Make sure the player is active
             if (p.isActive == false || p.IsSpawnProtectionActive == true) return;
 
             // Let the player handle its collision with the asteroid
             p.HandleCollision(a);
+
+            // Play a sound - (http://www.freesound.org/people/m_O_m/sounds/109073/)
+            asteroid_hit.Play();
 
             // Handle the asteroid collision
             HandleAsteroidCollision(a);
@@ -200,6 +219,9 @@ namespace Asteroids
 
             // Let the bullet handle its collision with the asteroid
             b.HandleCollision(a);
+
+            // Play a sound - (http://www.freesound.org/people/m_O_m/sounds/117771/)
+            asteroid_hit_bullet.Play();
 
             // Handle the asteroid collision
             HandleAsteroidCollision(a);

@@ -14,7 +14,6 @@ namespace Asteroids
 
     class Asteroid : Collidable
     {
-
         private AsteroidType type;
 
         private Texture2D texture;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -24,7 +25,6 @@ namespace Asteroids
         private Texture2D ship_texture;
         private Texture2D bullet_texture;
 
-        //private List<Bullet> bullets;
         private Bullet[] bullets;
 
         private Vector2 origin;
@@ -43,7 +43,10 @@ namespace Asteroids
         private float spawnProtectionTime    = 0f;
         private float gameOverExplosionTimer = 1f;
 
-        // Constants
+        #endregion
+
+        #region Constants
+
         private const float drag            = 0.005f;
         private const float brake           = 0.025f;
         private const float rotationSpeed   = 0.125f;
@@ -51,6 +54,10 @@ namespace Asteroids
         private const float respawnTime     = 1.0f;
         private const float spawnProtection = 2f;
         private const int   maxBullets      = 20;
+
+        #endregion
+
+        #region Particle Effects
 
         // Particle System
         Renderer particleRenderer;
@@ -64,6 +71,15 @@ namespace Asteroids
 
         #endregion
 
+        #region Sound Effects
+
+        SoundEffect bullet_fire;
+        SoundEffect thrust_sound;
+
+        float trust_sound_timer;
+
+        #endregion
+
         public Player(ContentManager content, PlayerIndex? playerIndex)
         {
             this.playerIndex = playerIndex.Value;
@@ -74,6 +90,12 @@ namespace Asteroids
             // Textures
             ship_texture   = content.Load<Texture2D>("sprite/ship");
             bullet_texture = content.Load<Texture2D>("sprite/bullet");
+
+            // Sounds
+            bullet_fire  = content.Load<SoundEffect>("sound/asteroids-ship-fire");
+            thrust_sound = content.Load<SoundEffect>("sound/thrust");
+
+            trust_sound_timer = (float)thrust_sound.Duration.TotalSeconds;
 
             // Bullets
             bullets = new Bullet[maxBullets];
@@ -103,6 +125,12 @@ namespace Asteroids
             explosionEffect = content.Load<ParticleEffect>("effect/Explosion");
             explosionEffect.LoadContent(content);
             explosionEffect.Initialise();
+
+            // Thrust Effect
+            thrustEffect = new ParticleEffect();
+            thrustEffect = content.Load<ParticleEffect>("effect/Thrust");
+            thrustEffect.LoadContent(content);
+            thrustEffect.Initialise();
         }
 
         #region Events 
@@ -204,6 +232,7 @@ namespace Asteroids
 
             // Update Particles
             explosionEffect.Update(dt);
+            thrustEffect.Update(dt);
 
             // Update the bullets
             for (int i = 0; i < bullets.Length; i++)
@@ -239,7 +268,25 @@ namespace Asteroids
             // Trigger Thrust Particles
             if (isThrustEnabled)
             {
-                explosionEffect.Trigger(position - velocity);
+                // Play Sound
+                // thrust_sound.Play();
+
+                /*
+                if (trust_sound_timer < (float)thrust_sound.Duration.TotalSeconds/2)
+                {
+                    trust_sound_timer = (float)thrust_sound.Duration.TotalSeconds;
+
+                    thrust_sound.Play();
+                }
+                trust_sound_timer -= dt;
+                 * */
+
+                // Update Particles
+                Vector2 p = new Vector2(
+                     (float)Math.Sin(rotation),
+                    -(float)Math.Cos(rotation)
+                );
+                thrustEffect.Trigger((position-(p*ship_texture.Height/2)) - velocity);
             }
 
             // Spawn Protection
@@ -285,7 +332,7 @@ namespace Asteroids
                 // Thrust Particles
                 if (isThrustEnabled)
                 {
-                    // TODO: Render Thrust Particles
+                    particleRenderer.RenderEffect(thrustEffect);
                 }
 
                 // Render the HUD
@@ -384,6 +431,9 @@ namespace Asteroids
                         
                         // We have fired the bullet
                         fired = true;
+
+                        // Play a sound - (http://www.freesound.org/people/CGEffex/sounds/96692/)
+                        bullet_fire.Play();
 
                         Console.WriteLine("Found Free Bullet At Index : " + i);
                     }

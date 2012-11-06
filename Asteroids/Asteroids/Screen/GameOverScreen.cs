@@ -10,6 +10,7 @@
 #region Using Statements
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace Asteroids
@@ -55,6 +56,9 @@ namespace Asteroids
         /// </summary>
         void ReturnToTitleSelected(object sender, PlayerIndexEventArgs e)
         {
+            // Stop any background music
+            MediaPlayer.Stop();
+
             LoadingScreen.Load(ScreenManager, false, null, new TitleBackgroundScreen(), new MainMenuScreen());
         }
 

@@ -47,3 +47,11 @@ Content\font\gamefont.xnb
 Content\font\menufont.xnb
 Content\effect\Explosion.xnb
 Content\sprite\loading_spinner.xnb
+Content\effect\Thrust.xnb
+Content\sound\asteroids-ship-fire.xnb
+Content\sound\asteroid_impact.xnb
+Content\sound\background.xnb
+Content\sound\thrust.xnb
+Content\sound\asteroid_impact_bullet.xnb
+Content\sound\menu_navigate.xnb
+Content\sound\background.wma

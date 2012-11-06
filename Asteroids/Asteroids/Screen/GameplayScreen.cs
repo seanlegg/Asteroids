@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace Asteroids
@@ -56,6 +57,12 @@ namespace Asteroids
         private AsteroidManager asteroidManager;
 
         private int level;
+
+        #endregion
+
+        #region Sound Effects
+
+        Song backgroundMusic;
 
         #endregion
 
@@ -155,6 +162,9 @@ namespace Asteroids
                 players.Add(p);
             }
 
+            // Load Background Music - (http://www.freesound.org/people/yewbic/sounds/33796/)
+            backgroundMusic = content.Load<Song>("sound/background");
+
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
             // while, giving you a chance to admire the beautiful loading screen.
@@ -194,8 +204,10 @@ namespace Asteroids
                     p.Init();
                 }
             }
-        }
 
+            // Play the background music
+            MediaPlayer.Play(backgroundMusic);            
+        }
 
         /// <summary>
         /// Unload graphics content used by the game.
