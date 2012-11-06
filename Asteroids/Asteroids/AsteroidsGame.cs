@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Net;
 
 namespace Asteroids
 {
@@ -48,7 +49,7 @@ namespace Asteroids
             screenManager.AddScreen(new MainMenuScreen(), null);
 
             // Listen for invite notification events.
-            // NetworkSession.InviteAccepted += (sender, e) => NetworkSessionComponent.InviteAccepted(screenManager, e);
+            NetworkSession.InviteAccepted += (sender, e) => NetworkSessionComponent.InviteAccepted(screenManager, e);
         }
 
         /// <summary>

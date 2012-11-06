@@ -29,7 +29,7 @@ namespace Asteroids
     {
         #region Fields
 
-        public const int MaxGamers = 16;
+        public const int MaxGamers      = 4;
         public const int MaxLocalGamers = 4;
 
         ScreenManager screenManager;
@@ -170,8 +170,6 @@ namespace Asteroids
             int gamerIndex = networkSession.AllGamers.IndexOf(e.Gamer);
 
             e.Gamer.Tag = new Player(Game.Content, 0);
-
-            Console.WriteLine("Gamer Joined");
 
             if (notifyWhenPlayersJoinOrLeave)
             {

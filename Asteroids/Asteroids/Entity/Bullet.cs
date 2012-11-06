@@ -9,12 +9,23 @@ namespace Asteroids
     {
         private Texture2D bullet_texture;
 
+        private int id;
+
+        public static float constant_ttl   = 1.5f;
+        public static float constant_speed = 8.0f;
+
         public Bullet(Texture2D bullet_texture, Player owner)
         {
-            isActive   = true;
-            timeToLive = 1.5f;
-            speed      = 8.0f;
+            isActive   = false;
 
+            // Constants
+            speed      = constant_speed;
+            timeToLive = constant_ttl;
+
+            // Generate Id
+            id = this.GetHashCode();
+
+            // Texture
             this.bullet_texture = bullet_texture;
 
             this.owner    = owner;
@@ -27,7 +38,7 @@ namespace Asteroids
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            if (isActive == false) return;
+            if (isActive == false) return;            
 
             timeToLive -= (float) gameTime.ElapsedGameTime.TotalSeconds;
             if (timeToLive <= 0)
@@ -45,7 +56,7 @@ namespace Asteroids
             if (isActive == false) return;
 
             spriteBatch.Begin();
-            spriteBatch.Draw(bullet_texture, position, Color.White);
+            spriteBatch.Draw(bullet_texture, position, Color.Yellow);
             spriteBatch.End();
 
             base.Draw(spriteBatch);
@@ -106,6 +117,23 @@ namespace Asteroids
         {
             get { return velocity; }
             set { velocity = value; }
+        }
+
+        public int Id
+        {
+            get { return 0; }
+            set { id = value; }
+        }
+
+        public float Speed
+        {
+            get { return speed; }
+        }
+
+        public double TimeToLive
+        {
+            get { return timeToLive; }
+            set { timeToLive = value; }
         }
     }
 }

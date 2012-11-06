@@ -36,7 +36,7 @@ namespace Asteroids
 
         IAsyncResult asyncResult;
         Texture2D gradientTexture;
-        Texture2D catTexture;
+        Texture2D loadingSpinnerTexture;
 
         #endregion
 
@@ -74,7 +74,7 @@ namespace Asteroids
             ContentManager content = ScreenManager.Game.Content;
 
             gradientTexture = content.Load<Texture2D>("sprite/gradient");
-            catTexture = content.Load<Texture2D>("sprite/cat");
+            loadingSpinnerTexture = content.Load<Texture2D>("sprite/loading_spinner");
         }
 
 
@@ -127,10 +127,10 @@ namespace Asteroids
             Vector2 textSize = font.MeasureString(message);
 
             // Add enough room to spin a cat.
-            Vector2 catSize = new Vector2(catTexture.Width);
+            Vector2 spinnerSize = new Vector2(loadingSpinnerTexture.Width);
 
-            textSize.X = Math.Max(textSize.X, catSize.X);
-            textSize.Y += catSize.Y + vPad;
+            textSize.X = Math.Max(textSize.X, spinnerSize.X);
+            textSize.Y += spinnerSize.Y + vPad;
 
             Vector2 textPosition = (viewportSize - textSize) / 2;
 
@@ -152,14 +152,14 @@ namespace Asteroids
             spriteBatch.DrawString(font, message, textPosition, color);
 
             // Draw the spinning cat progress indicator.
-            float catRotation = (float)gameTime.TotalGameTime.TotalSeconds * 3;
+            float spinnerRotation = (float)gameTime.TotalGameTime.TotalSeconds * 3;
 
-            Vector2 catPosition = new Vector2(textPosition.X + textSize.X / 2,
+            Vector2 spinnerPosition = new Vector2(textPosition.X + textSize.X / 2,
                                               textPosition.Y + textSize.Y -
-                                                                        catSize.Y / 2);
+                                                                        spinnerSize.Y / 2);
 
-            spriteBatch.Draw(catTexture, catPosition, null, color, catRotation,
-                             catSize / 2, 1, SpriteEffects.None, 0);
+            spriteBatch.Draw(loadingSpinnerTexture, spinnerPosition, null, color, spinnerRotation,
+                             spinnerSize / 2, 1, SpriteEffects.None, 0);
 
             spriteBatch.End();
         }

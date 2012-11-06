@@ -14,7 +14,17 @@ namespace Asteroids
 
     class AsteroidManager : Manager
     {
+
+        #region Constants
+
+        private const int max_asteroids_title = 15;
+
+        #endregion
+
+        #region Properties
+
         private List<Asteroid> asteroids;
+        //private Asteroid[] asteroids;
 
         private Texture2D texture_small;
         private Texture2D texture_medium;
@@ -22,7 +32,7 @@ namespace Asteroids
         
         private Random rand;
 
-        private const int max_asteroids_title = 15;
+        #endregion
 
         public AsteroidManager(ContentManager content, Mode mode)
         {
@@ -50,8 +60,8 @@ namespace Asteroids
             asteroids.Clear();
 
             // TODO: Remove Magic Numbers
-            int w = 1280;
-            int h = 720;
+            int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
+            int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
             int n = 1000;
 
             for (int i = 0; i < 5; i++)
@@ -72,9 +82,8 @@ namespace Asteroids
             asteroids.Clear();
 
             // TODO: Remove Magic Numbers
-            int w = 1280;
-            int h = 720;
-            int n = 1000;
+            int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
+            int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
 
             for (int i = 0; i < (level*5); i++)
             {
@@ -94,8 +103,8 @@ namespace Asteroids
             asteroids.Clear();
 
             // TODO: Remove Magic Numbers
-            int w = 1280;
-            int h = 720;
+            int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
+            int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
             int n = 1000;
 
             for (int i = 0; i < max_asteroids_title; i++)
@@ -144,22 +153,26 @@ namespace Asteroids
         {
             Asteroid a = null, b = null;
 
-            // BUG (360 ONLY)
-            //float r1 = rand.Next();
-            //float s  = (float) Math.Sin(r1);
+            Vector2 v1 = new Vector2((float)Math.Sin(rand.Next() % 1000), (float)Math.Cos(rand.Next() % 1000));
+            Vector2 v2 = new Vector2((float)Math.Sin(rand.Next() % 1000), (float)Math.Cos(rand.Next() % 1000));
 
-            Vector2 v1 = new Vector2( (float) Math.Sin(rand.Next()), (float) Math.Cos(rand.Next()) );
-            Vector2 v2 = new Vector2( (float) Math.Sin(rand.Next()), (float) Math.Cos(rand.Next()) );
+            // Rotations
+            float r1 = rand.Next(0, 359);
+            float r2 = rand.Next(0, 359);
+
+            // Rotation Speed
+            float s1 = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
+            float s2 = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
 
             if (type == AsteroidType.MEDIUM)
             {
-                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v1, 0.0f, 0.0f);
-                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v2, 0.0f, 0.0f);
+                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v1, r1, s1);
+                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v2, r2, s2);
             } 
             else if (type == AsteroidType.SMALL)
             {
-                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v1, 0.0f, 0.0f);
-                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v2, 0.0f, 0.0f);
+                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v1, r1, s1);
+                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v2, r2, s2);
             }
             asteroids.Add(a);
             asteroids.Add(b);
@@ -179,6 +192,9 @@ namespace Asteroids
 
         public void HandleCollision(Asteroid a, Bullet b) 
         {
+            // Make sure the asteroid is active
+            if (a.isActive == false) return;
+
             // Make sure the bullet is active
             if (b.isActive == false) return;
 

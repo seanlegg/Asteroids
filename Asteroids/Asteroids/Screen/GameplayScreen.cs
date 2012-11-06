@@ -27,12 +27,23 @@ namespace Asteroids
     /// </summary>
     class GameplayScreen : GameScreen
     {
-        #region Fields
+        #region Constants
 
-        // Networking
-        NetworkSession networkSession;
-        PacketReader packetReader = new PacketReader();
-        PacketWriter packetWriter = new PacketWriter();
+        public enum PacketTypes
+        {
+            GameData,
+            PlayerData,
+            PlayerDeath,
+            PlayerSpawn,
+            GameWon,
+        };
+
+        private const int updatesBetweenGameDataPackets = 30;
+        private const int updatesBetweenStatusPackets   = 0;
+
+        #endregion
+
+        #region Fields
 
         ContentManager content;
         SpriteFont gameFont;
@@ -94,6 +105,18 @@ namespace Asteroids
 
         #endregion
 
+        #region Networking Data
+
+        private NetworkSession networkSession;
+
+        private PacketReader packetReader = new PacketReader();
+        private PacketWriter packetWriter = new PacketWriter();
+
+        private int updatesSinceGameDataSend = 0;
+        private int updatesSinceStatusPacket = 0;
+
+        #endregion
+
         #region Initialization
 
 
@@ -131,21 +154,6 @@ namespace Asteroids
 
                 players.Add(p);
             }
-            
-            /*
-            else
-            {
-
-                foreach (NetworkGamer gamer in networkSession.LocalGamers)
-                {
-                    Player p = new Player(content, PlayerIndex.One);
-                    p.onGameOver += OnGameOver;
-
-                    players.Add(p);
-                }
-                Console.WriteLine("Players.length = " + players.Count);
-            }
-            */
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -223,96 +231,134 @@ namespace Asteroids
 
         #region Network
 
-        void ReceiveNetworkData(LocalNetworkGamer gamer)
+        private void UpdateGameData()
         {
-            // Keep reading as long as incoming packets are available.
-            while (gamer.IsDataAvailable)
+            if (packetReader == null)
             {
-                NetworkGamer sender;
+                throw new ArgumentNullException("packetReader");
+            }
 
-                // Read a single packet from the network.
-                gamer.ReceiveData(packetReader, out sender);
+            int numberAsteroids = packetReader.ReadInt32();
 
-                // Discard packets sent by local gamers: we already know their state!
-                if (sender.IsLocal)
-                    continue;
+            // Remove all the asteroids
+            asteroidManager.Asteroids.Clear();
 
-                // Look up the tank associated with whoever sent this packet.
-                Player remotePlayer = sender.Tag as Player;
+            for (int i = 0; i < numberAsteroids; i++)
+            {
+                asteroidManager.AddAsteroid((AsteroidType)packetReader.ReadInt32(), packetReader.ReadVector2(), packetReader.ReadVector2(), 0, 0);
+            }
+        }
 
-                // Read the state of this player from the network packet.
-                remotePlayer.Position = packetReader.ReadVector2();
-                remotePlayer.Velocity = packetReader.ReadVector2();
-                remotePlayer.Rotation = packetReader.ReadDouble();
+        private void UpdateShipData(NetworkGamer sender)
+        {
+            if (sender != null)
+            {
+                Player player = sender.Tag as Player;
 
-                // Bullets
-                int numBullets = packetReader.ReadInt32();
-
-                // Clear Current Bullets
-                remotePlayer.Bullets.Clear();
-
-                for (int i = 0; i < numBullets; i++)
+                if (player != null)
                 {
-                    remotePlayer.Firebullet(packetReader.ReadVector2(), packetReader.ReadVector2());
-                }
-
-                // Update the asteroid state
-                if (gamer.IsHost == false)
-                {
-                    int numberAsteroids = packetReader.ReadInt32();
-
-                    // Remove all the asteroids
-                    asteroidManager.Asteroids.Clear();
-
-                    for (int i = 0; i < numberAsteroids; i++)
-                    {
-                        asteroidManager.AddAsteroid((AsteroidType)packetReader.ReadInt32(), packetReader.ReadVector2(), packetReader.ReadVector2(), 0, 0);
-                    }
+                    player.Position = packetReader.ReadVector2();
+                    player.Velocity = packetReader.ReadVector2();
+                    player.Rotation = packetReader.ReadDouble();
                 }
             }
         }
 
-        void SendNetworkData(LocalNetworkGamer gamer)
+        private void SendLocalShipData()
         {
-            Player p = gamer.Tag as Player;            
-
-            // Write the player data
-            packetWriter.Write(p.Position);
-            packetWriter.Write(p.Velocity);
-            packetWriter.Write(p.Rotation);
-
-            // Bullet Data
-            packetWriter.Write(p.Bullets.Count);
-
-            for (int i = 0; i < p.Bullets.Count; i++)
+            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
             {
-                packetWriter.Write(p.Bullets[i].Position);
-                packetWriter.Write(p.Bullets[i].Velocity);
-            }
+                Player player = networkSession.LocalGamers[0].Tag as Player;
 
-            // Only the host should update the asteroids state
-            if (gamer.IsHost)
-            {
-                int numberAsteroids = asteroidManager.Asteroids.Count;
-
-                packetWriter.Write(numberAsteroids);
-
-                for (int i = 0; i < numberAsteroids; i++)
+                if (player != null)
                 {
-                    packetWriter.Write((int)asteroidManager.Asteroids[i].Type);
-                    packetWriter.Write(asteroidManager.Asteroids[i].Position);
-                    packetWriter.Write(asteroidManager.Asteroids[i].Velocity);
+                    packetWriter.Write((int)PacketTypes.PlayerData);
+                    packetWriter.Write(player.Position);
+                    packetWriter.Write(player.Velocity);
+                    packetWriter.Write(player.Rotation);
+
+                    networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
                 }
             }
+        }
 
-            // Send the data to everyone in the session.
-            gamer.SendData(packetWriter, SendDataOptions.InOrder);
+        private void SendLocalShipDeath()
+        {
+            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
+            {
+                Player player = networkSession.LocalGamers[0].Tag as Player;
+
+                // Player Death Notification
+                packetWriter.Write((int)PacketTypes.PlayerDeath);
+
+                networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.ReliableInOrder);
+            }
+        }
+
+        void ReceiveNetworkData()
+        {
+            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
+            {
+                LocalNetworkGamer gamer = networkSession.LocalGamers[0];
+
+                // Keep reading as long as incoming packets are available.
+                while (gamer.IsDataAvailable)
+                {
+                    NetworkGamer sender;
+
+                    // Read a single packet from the network.
+                    gamer.ReceiveData(packetReader, out sender);
+
+                    // Discard packets sent by local gamers: we already know their state!
+                    if (sender.IsLocal)
+                        continue;
+
+                    // Check the type of the packet
+                    PacketTypes packetType = (PacketTypes)packetReader.ReadInt32();
+
+                    switch (packetType)
+                    {
+                        case PacketTypes.GameData:
+                            UpdateGameData();
+                            break;
+                        case PacketTypes.PlayerData:
+                            UpdateShipData(sender);
+                            break;
+                    }
+
+                    // Bullets
+                    /*
+                    int activeBullets = packetReader.ReadInt32();
+
+                    for (int i = 0; i < activeBullets; i++)
+                    {
+                        int id     = packetReader.ReadInt32();
+                        double ttl = packetReader.ReadDouble();
+
+                        // Try and retreive the bullet
+                        Bullet b = remotePlayer.FindBulletById(id);
+
+                        if (b == null)
+                        {
+                            remotePlayer.FireBullet(id, packetReader.ReadVector2(), packetReader.ReadVector2());
+                        }
+                        else
+                        {
+                            // Update an existing bullet
+                            b.isActive   = true;
+                            b.TimeToLive = ttl;
+                            b.Position   = packetReader.ReadVector2();
+                            b.Velocity   = packetReader.ReadVector2();
+                        }
+                    }
+                     * */
+                }
+            }
         }
 
         #endregion
 
         #region Update and Draw
-
 
         /// <summary>
         /// Updates the state of the game.
@@ -329,45 +375,68 @@ namespace Asteroids
                 pauseAlpha = Math.Max(pauseAlpha - 1f / 32, 0);
 
             if (IsActive)
-            {
+            {                
                 if (networkSession != null)
-                {                    
-                    foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+                {
+                    // Process Incoming Packets
+                    ReceiveNetworkData();
+
+                    if (networkSession.IsHost)
                     {
-                        // Send Network Data
-                        SendNetworkData(gamer);
+                        LocalNetworkGamer gamer = networkSession.Host as LocalNetworkGamer;
+
+                        if (updatesSinceGameDataSend >= updatesBetweenGameDataPackets)
+                        {
+                            updatesSinceGameDataSend = 0;
+
+                            // Write each of the asteroids
+                            packetWriter.Write((int)PacketTypes.GameData);
+                            packetWriter.Write(asteroidManager.Asteroids.Count);
+
+                            for (int i = 0; i < asteroidManager.Asteroids.Count; i++)
+                            {
+                                Asteroid asteroid = asteroidManager.Asteroids[i];
+
+                                packetWriter.Write((int)asteroid.Type);
+                                packetWriter.Write(asteroid.Position);
+                                packetWriter.Write(asteroid.Velocity);                                
+                            }
+                            gamer.SendData(packetWriter, SendDataOptions.InOrder);
+                        }
+                        else
+                        {
+                            updatesSinceGameDataSend++;
+                        }
                     }
 
-                    // Update the network session object
-                    networkSession.Update();
-
-                    foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
-                    {
-                        ReceiveNetworkData(gamer);
-                    }
-
-                    // Update local players
-                    foreach (LocalNetworkGamer gamer in networkSession.LocalGamers)
+                    // Update players
+                    foreach (NetworkGamer gamer in networkSession.AllGamers)
                     {
                         Player p = gamer.Tag as Player;
 
-                        p.Update(gameTime);
-                    }
-
-                    // Update remote players
-                    foreach (NetworkGamer gamer in networkSession.RemoteGamers)
-                    {
-                        Player p = gamer.Tag as Player;
-
-                        p.Update(gameTime);
-                    }
-
-                    if (networkSession == null)
-                    {
-                        players.ForEach(delegate(Player p)
+                        if (p != null)
                         {
                             p.Update(gameTime);
-                        });
+
+                            if (gamer.IsLocal && p.wasKilled)
+                            {
+                                // Reset the death flag
+                                p.wasKilled = false;
+
+                                SendLocalShipDeath();
+                            }
+                        }
+                    }
+
+                    // Send Player Data  
+                    if (updatesSinceStatusPacket >= updatesBetweenStatusPackets)
+                    {
+                        updatesSinceStatusPacket = 0;
+                        SendLocalShipData();
+                    }
+                    else
+                    {
+                        updatesSinceStatusPacket++;
                     }
                 }
                 else
@@ -546,14 +615,19 @@ namespace Asteroids
                     }
 
                     // Check for collisions with bullets
-                    p.Bullets.ForEach(delegate(Bullet b)
+                    for (int i = 0; i < p.Bullets.Length; i++)
                     {
-                        // Bullets - Asteroids
-                        if (Collision.BoundingSphere(b, a))
+                        Bullet b = p.Bullets[i];
+
+                        if (b != null)
                         {
-                            asteroidManager.HandleCollision(a, b);
+                            // Bullets - Asteroids
+                            if (Collision.BoundingSphere(b, a))
+                            {
+                                asteroidManager.HandleCollision(a, b);
+                            }
                         }
-                    });
+                    }
                 });
             }
         }
@@ -571,20 +645,25 @@ namespace Asteroids
                     }
 
                     // Check for collisions with bullets
-                    p.Bullets.ForEach(delegate(Bullet b)
+                    for (int i = 0; i < p.Bullets.Length; i++)
                     {
-                        // Bullets - Asteroids
-                        if (Collision.BoundingSphere(b, a))
-                        {
-                            asteroidManager.HandleCollision(a, b);
-                        }
+                        Bullet b = p.Bullets[i];
 
-                        // Bullets - Players
-                        if (Collision.BoundingSphere(b, p))
+                        if (b != null)
                         {
-                            p.HandleCollision(b);
+                            // Bullets - Asteroids
+                            if (Collision.BoundingSphere(b, a))
+                            {
+                                asteroidManager.HandleCollision(a, b);
+                            }
+
+                            // Bullets - Players
+                            if (Collision.BoundingSphere(b, p))
+                            {
+                                p.HandleCollision(b);
+                            }
                         }
-                    });
+                    }
                 });
             });
         }

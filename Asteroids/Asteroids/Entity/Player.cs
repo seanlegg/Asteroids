@@ -17,7 +17,6 @@ namespace Asteroids
     {
         #region Fields
 
-        private byte Id;
         private PlayerIndex playerIndex;
 
         private SpriteFont font;
@@ -25,11 +24,14 @@ namespace Asteroids
         private Texture2D ship_texture;
         private Texture2D bullet_texture;
 
-        private List<Bullet> bullets;
+        //private List<Bullet> bullets;
+        private Bullet[] bullets;
 
         private Vector2 origin;
         private Vector2 position;
         private Vector2 velocity;
+
+        public bool wasKilled;
 
         private float speed;
         private double rotation;
@@ -48,6 +50,7 @@ namespace Asteroids
         private const float gunCooldown     = 0.5f;
         private const float respawnTime     = 1.0f;
         private const float spawnProtection = 2f;
+        private const int   maxBullets      = 20;
 
         // Particle System
         Renderer particleRenderer;
@@ -72,7 +75,13 @@ namespace Asteroids
             ship_texture   = content.Load<Texture2D>("sprite/ship");
             bullet_texture = content.Load<Texture2D>("sprite/bullet");
 
-            bullets = new List<Bullet>();
+            // Bullets
+            bullets = new Bullet[maxBullets];
+
+            for (int i = 0; i < maxBullets; i++)
+            {
+                bullets[i] = new Bullet(bullet_texture, this);
+            }
 
             position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
             velocity = Vector2.Zero;
@@ -95,13 +104,6 @@ namespace Asteroids
             explosionEffect.LoadContent(content);
             explosionEffect.Initialise();
         }
-
-        /*
-        public Player(ContentManager content, byte Id)
-        {
-            this.Id = Id;
-        }
-         */
 
         #region Events 
 
@@ -127,7 +129,7 @@ namespace Asteroids
 
         public void Respawn()
         {
-            isActive = true;
+            isActive = true;            
 
             spawnProtectionTime = spawnProtection;
 
@@ -138,7 +140,8 @@ namespace Asteroids
 
         public void DecrementLives()
         {
-            isActive = false;
+            isActive  = false;
+            wasKilled = true;
             lives--;
 
             if (lives <= 0)
@@ -202,6 +205,16 @@ namespace Asteroids
             // Update Particles
             explosionEffect.Update(dt);
 
+            // Update the bullets
+            for (int i = 0; i < bullets.Length; i++)
+            {
+                Bullet b = bullets[i];
+                if (b != null)
+                {
+                    b.Update(gameTime);
+                }
+            }
+
             if (isActive == false)
             {
                 // Only allow the explosion particles to update for a short amount of time in the GameOver state
@@ -238,17 +251,6 @@ namespace Asteroids
             // Update the position of the ship
             position += velocity;
 
-            // Update the bullets
-            bullets.ForEach(delegate(Bullet b)
-            {
-                b.Update(gameTime);
-
-                if (b.isActive == false)
-                {
-                    bullets.Remove(b);
-                }
-            });
-
             // Wrap the screen
             position = Helper.wrapUniverse(position, ship_texture.Width, ship_texture.Height);
 
@@ -260,10 +262,14 @@ namespace Asteroids
             int i;
 
             // Render the player's bullets
-            bullets.ForEach(delegate(Bullet b)
+            for (i = 0; i < bullets.Length; i++)
             {
-                b.Draw(spriteBatch);
-            });
+                Bullet b = bullets[i];
+                if (b != null)
+                {
+                    b.Draw(spriteBatch);
+                }
+            }
 
             spriteBatch.Begin();
             {
@@ -346,22 +352,52 @@ namespace Asteroids
 
             if (input.IsNewKeyPress(Keys.Space, playerIndex, out playerIndex) || input.IsNewButtonPress(Buttons.A, playerIndex, out playerIndex))
             {
-               Fire();
+                Vector2 bulletVelocity = new Vector2(
+                     (float)Math.Sin(rotation) * Bullet.constant_speed,
+                    -(float)Math.Cos(rotation) * Bullet.constant_speed
+                );
+                FireBullet(0, position, bulletVelocity);
             }
         }
 
-        public void Firebullet(Vector2 position, Vector2 velocity)
+        public void FireBullet(int id, Vector2 position, Vector2 velocity)
         {
-            Bullet b = new Bullet(bullet_texture, this);
-            b.Position = position;
-            b.Velocity = velocity;
+            bool fired = false;
 
-            bullets.Add(b);
+            // Find the next free position
+            for (int i = 0; i < bullets.Length && fired == false; i++)
+            {
+                Bullet b = bullets[i];
+
+                if (b != null)
+                {
+                    if (b.isActive == false)
+                    {
+                        b.Position   = position;
+                        b.Velocity   = velocity;
+                        b.TimeToLive = Bullet.constant_ttl;
+                        if (id != 0)
+                        {
+                            b.Id = id;
+                        }
+                        b.isActive   = true;
+                        
+                        // We have fired the bullet
+                        fired = true;
+
+                        Console.WriteLine("Found Free Bullet At Index : " + i);
+                    }
+                }
+            }
         }
 
-        public void Fire()
+        public Bullet FindBulletById(int id)
         {
-            bullets.Add(new Bullet(bullet_texture, this));
+            for (int i = 0; i < bullets.Length; i++)
+            {
+                if (bullets[i].Id == id) return bullets[i];
+            }
+            return null;
         }
 
         #region Collision Detection
@@ -388,9 +424,28 @@ namespace Asteroids
             get { return spawnProtectionTime > 0f; }
         }
 
-        public List<Bullet> Bullets
+        public Bullet[] Bullets
         {
             get { return bullets; }
+        }
+
+        public int NumActiveBullets
+        {
+            get
+            {
+                int count = 0;
+
+                for (int i = 0; i < bullets.Length; i++)
+                {
+                    Bullet b = bullets[i];
+
+                    if (b.isActive == true)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
         }
 
         public Vector2 Position

@@ -40,12 +40,9 @@ namespace Asteroids
             this.origin   = new Vector2(texture.Width / 2, texture.Height / 2);
             this.rotation = rotation;
             this.rotationSpeed = rotationSpeed;
-
-            //rotation      = rand.Next(0, 359);
-            //rotationSpeed = ((float) Math.Sin(rand.Next(0, 1000))) * 0.05f;
         }
 
-        public override void Update(Microsoft.Xna.Framework.GameTime dt)
+        public override void Update(GameTime dt)
         {
             if (isActive == false) return;
 
@@ -59,12 +56,14 @@ namespace Asteroids
             base.Update(dt);
         }
 
-        public override void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             if (isActive == false) return;
 
+            // Image Source: http://opengameart.org/content/2d-asteroid-sprite
+            // XNA Colours:  http://www.foszor.com/blog/xna-color-chart/
             spriteBatch.Begin();
-            spriteBatch.Draw(texture, position, null, Color.White, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
+            spriteBatch.Draw(texture, position, null, Color.BurlyWood, rotation, origin, 1.0f, SpriteEffects.None, 0.0f);
             spriteBatch.End();
 
             base.Draw(spriteBatch);
@@ -104,11 +103,13 @@ namespace Asteroids
         public Vector2 Position
         {
             get { return position; }
+            set { position = value; }
         }
 
         public Vector2 Velocity
         {
             get { return velocity; }
+            set { velocity = value; }
         }
 
         public int Width

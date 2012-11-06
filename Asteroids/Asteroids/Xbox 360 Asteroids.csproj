@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{C1ADB77A-D84C-4A93-912C-76AF6D33FD10}</ProjectGuid>
+    <ProjectGuid>{5d5bcfb7-ce58-4c0e-844e-eb812e02a248}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Xbox 360</Platform>
@@ -70,7 +70,6 @@
     <Compile Include="Entity\Asteroid.cs" />
     <Compile Include="AsteroidsGame.cs" />
     <Compile Include="Event\OperationCompletedEventArgs.cs" />
-    <Compile Include="Event\PlayerIndexEventArgs.cs" />
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Entity\Bullet.cs" />
     <Compile Include="Base\Collidable.cs" />
@@ -80,13 +79,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Screen\GameOverScreen.cs" />
-    <Compile Include="Screen\GameplayScreen.cs" />
-    <Compile Include="Screen\LoadingScreen.cs" />
-    <Compile Include="Screen\MainMenuScreen.cs" />
-    <Compile Include="Screen\MenuEntry.cs" />
-    <Compile Include="Screen\MenuScreen.cs" />
-    <Compile Include="Screen\MessageBoxScreen.cs" />
     <Compile Include="Screen\Network\AvailableSessionMenuEntry.cs" />
     <Compile Include="Screen\Network\CreateOrFindSessionScreen.cs" />
     <Compile Include="Screen\Network\JoinSessionScreen.cs" />
@@ -95,8 +87,16 @@
     <Compile Include="Screen\Network\NetworkErrorScreen.cs" />
     <Compile Include="Screen\Network\NetworkSessionComponent.cs" />
     <Compile Include="Screen\Network\ProfileSignInScreen.cs" />
-    <Compile Include="Screen\PauseMenuScreen.cs" />
     <Compile Include="Screen\TitleBackgroundScreen.cs" />
+    <Compile Include="Screen\GameOverScreen.cs" />
+    <Compile Include="Screen\GameplayScreen.cs" />
+    <Compile Include="Screen\LoadingScreen.cs" />
+    <Compile Include="Screen\MainMenuScreen.cs" />
+    <Compile Include="Screen\MenuEntry.cs" />
+    <Compile Include="Screen\MenuScreen.cs" />
+    <Compile Include="Screen\MessageBoxScreen.cs" />
+    <Compile Include="Screen\PauseMenuScreen.cs" />
+    <Compile Include="Event\PlayerIndexEventArgs.cs" />
     <Compile Include="Utility\Collision.cs" />
     <Compile Include="Utility\Helper.cs" />
     <Compile Include="Manager\InputManager.cs" />
@@ -112,6 +112,7 @@
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
       <Visible>False</Visible>
@@ -143,8 +144,10 @@
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework">
       <Private>False</Private>
@@ -176,9 +179,8 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
-    <Reference Include="ProjectMercury">
-      <HintPath>..\..\..\..\..\Downloads\Mercury Particle Engine 3.1 for XNA 4.0 (Binaries)\Mercury Particle Engine 3.1 for XNA 4.0 (Binaries)\References\Xbox\ProjectMercury.dll</HintPath>
-    </Reference>
+    <Reference Include="ProjectMercury" />
+    <Reference Include="ProjectMercury.ContentPipeline" />
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -193,7 +195,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--
