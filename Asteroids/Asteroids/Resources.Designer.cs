@@ -321,7 +321,7 @@ namespace Asteroids {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Main Menu.
+        ///   Looks up a localized string similar to IET Asteroids.
         /// </summary>
         internal static string MainMenu {
             get {

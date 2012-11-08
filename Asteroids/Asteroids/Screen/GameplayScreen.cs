@@ -40,7 +40,7 @@ namespace Asteroids
         };
 
         private const int updatesBetweenGameDataPackets = 30;
-        private const int updatesBetweenStatusPackets   = 0;
+        private const int updatesBetweenStatusPackets   = 0;        
 
         #endregion
 
@@ -55,6 +55,10 @@ namespace Asteroids
 
         private List<Player> players;
         private AsteroidManager asteroidManager;
+
+        private StarField starField;
+
+        private Vector2[] scoreRegions;
 
         private int level;
 
@@ -135,11 +139,25 @@ namespace Asteroids
             this.networkSession = networkSession;
 
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
-            TransitionOffTime = TimeSpan.FromSeconds(0.5);            
+            TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             players = new List<Player>();
-        }
 
+            // HUD - Score Regions (Positions)
+            scoreRegions = new Vector2[4];
+            {
+                int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
+                int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
+                int offset = 5;    // offset
+                int hWidth  = 115; // hud width
+                int hHeight = 45;  // hud height
+
+                scoreRegions[0] = new Vector2(offset, offset);
+                scoreRegions[1] = new Vector2(w - hWidth, offset);
+                scoreRegions[2] = new Vector2(offset, h - hHeight);
+                scoreRegions[3] = new Vector2(w - hWidth, h - hHeight);
+            }
+        }
 
         /// <summary>
         /// Load graphics content for the game.
@@ -159,16 +177,22 @@ namespace Asteroids
                 Player p = new Player(content, ControllingPlayer);
                 p.onGameOver += OnGameOver;
 
+                // Set HUD properties
+                p.ScoreRegion = scoreRegions[0];
+
                 players.Add(p);
             }
 
-            // Load Background Music - (http://www.freesound.org/people/yewbic/sounds/33796/)
+            // Load Background Music - (http://freemusicarchive.org/music/Edward_Shallow/World_Head_Law/02_Poisons__Potions)
             backgroundMusic = content.Load<Song>("sound/background");
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
             // while, giving you a chance to admire the beautiful loading screen.
             //Thread.Sleep(1000);
+
+            // Create the star field
+            starField = new StarField(content);
 
             // Initialize the game
             InitGame();
@@ -197,16 +221,32 @@ namespace Asteroids
             }
             else
             {
+                int hIndex = 0;
+
                 foreach (NetworkGamer gamer in networkSession.AllGamers)
                 {
                     Player p = gamer.Tag as Player;
 
+                    // Initialise the player
                     p.Init();
+
+                    // Bind the gameOver event to local players
+                    if (gamer.IsLocal)
+                    {
+                        p.onGameOver += OnGameOver;
+                    }
+
+                    // Initialise the HUD
+                    p.ScoreRegion = scoreRegions[hIndex];
+
+                    hIndex++;
                 }
             }
 
             // Play the background music
-            MediaPlayer.Play(backgroundMusic);            
+            
+            MediaPlayer.Play(backgroundMusic);
+            MediaPlayer.Volume = 20;
         }
 
         /// <summary>
@@ -229,14 +269,7 @@ namespace Asteroids
         {
             GameOverScreen gameOverScreen = new GameOverScreen(networkSession);
 
-            if (networkSession == null)
-            {
-                ScreenManager.AddScreen(gameOverScreen, ControllingPlayer);
-            }
-            else
-            {
-                Console.WriteLine("Multiplayer Game Over!");
-            }
+            ScreenManager.AddScreen(gameOverScreen, ControllingPlayer);
         }
 
         #endregion
@@ -269,9 +302,12 @@ namespace Asteroids
 
                 if (player != null)
                 {
-                    player.Position = packetReader.ReadVector2();
-                    player.Velocity = packetReader.ReadVector2();
-                    player.Rotation = packetReader.ReadDouble();
+                    player.Position    = packetReader.ReadVector2();
+                    player.Velocity    = packetReader.ReadVector2();
+                    player.Rotation    = packetReader.ReadDouble();
+                    player.IsThrusting = packetReader.ReadBoolean();
+                    player.isActive    = packetReader.ReadBoolean();
+                    player.IsGameOver  = packetReader.ReadBoolean();
                 }
             }
         }
@@ -288,6 +324,9 @@ namespace Asteroids
                     packetWriter.Write(player.Position);
                     packetWriter.Write(player.Velocity);
                     packetWriter.Write(player.Rotation);
+                    packetWriter.Write(player.IsThrusting);
+                    packetWriter.Write(player.isActive);
+                    packetWriter.Write(player.IsGameOver);
 
                     networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
                 }
@@ -387,7 +426,9 @@ namespace Asteroids
                 pauseAlpha = Math.Max(pauseAlpha - 1f / 32, 0);
 
             if (IsActive)
-            {                
+            {
+                starField.Update(gameTime);
+
                 if (networkSession != null)
                 {
                     // Process Incoming Packets
@@ -473,6 +514,31 @@ namespace Asteroids
                 else
                 {
                     CheckMultiplayerCollisions();
+                }
+            }
+
+            // Check for gameOver state
+            if (networkSession != null)
+            {
+                bool shouldReturnToLobby = true;
+
+                foreach (NetworkGamer gamer in networkSession.AllGamers)
+                {
+                    Player p = gamer.Tag as Player;
+
+                    if (p.IsGameOver == false)
+                    {
+                        shouldReturnToLobby = false;
+                    }
+                }
+
+                // If all players are in the gameOver state then return to the lobby
+                if (shouldReturnToLobby)
+                {
+                    if (networkSession.SessionState == NetworkSessionState.Playing)
+                    {
+                        networkSession.EndGame();
+                    }
                 }
             }
 
@@ -567,6 +633,9 @@ namespace Asteroids
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+
+            // Draw the starfield
+            starField.Draw(spriteBatch);
 
             // Render Players
             if (networkSession == null)

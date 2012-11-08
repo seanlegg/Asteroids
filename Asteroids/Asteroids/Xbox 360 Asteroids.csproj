@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{5d5bcfb7-ce58-4c0e-844e-eb812e02a248}</ProjectGuid>
+    <ProjectGuid>{5D5BCFB7-CE58-4C0E-844E-EB812E02A248}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Xbox 360</Platform>
@@ -69,6 +69,7 @@
     <Compile Include="Component\MessageDisplayComponent.cs" />
     <Compile Include="Entity\Asteroid.cs" />
     <Compile Include="AsteroidsGame.cs" />
+    <Compile Include="Entity\StarField.cs" />
     <Compile Include="Event\OperationCompletedEventArgs.cs" />
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Entity\Bullet.cs" />

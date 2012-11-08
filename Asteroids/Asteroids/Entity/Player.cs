@@ -31,7 +31,8 @@ namespace Asteroids
         private Vector2 position;
         private Vector2 velocity;
 
-        public bool wasKilled;
+        public  bool wasKilled;
+        private bool isGameOver;
 
         private float speed;
         private double rotation;
@@ -43,6 +44,9 @@ namespace Asteroids
         private float spawnProtectionTime    = 0f;
         private float gameOverExplosionTimer = 1f;
 
+        // Heads Up Display (HUD)
+        Vector2 scoreRegion;
+        
         #endregion
 
         #region Constants
@@ -148,6 +152,7 @@ namespace Asteroids
 
             // Reset timers
             gameOverExplosionTimer = 1f;
+            spawnProtectionTime    = spawnProtection;
 
             // Reset the particle states
             isThrustEnabled = false;
@@ -330,17 +335,14 @@ namespace Asteroids
                 particleRenderer.RenderEffect(explosionEffect);
 
                 // Thrust Particles
-                if (isThrustEnabled)
-                {
-                    particleRenderer.RenderEffect(thrustEffect);
-                }
+                particleRenderer.RenderEffect(thrustEffect);
 
                 // Render the HUD
                 for (i = 0; i < lives; i++)
                 {
-                    spriteBatch.Draw(ship_texture, new Vector2(ship_texture.Width + (i * ship_texture.Width)+(i*10), ship_texture.Height), Color.White);
+                    spriteBatch.Draw(ship_texture, new Vector2(scoreRegion.X + (i * ship_texture.Width/2) + (i * 10), scoreRegion.Y), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);                    
                 }
-                spriteBatch.DrawString(font, "Score: " + score, new Vector2(ship_texture.Width,0), Color.White);
+                spriteBatch.DrawString(font, "Score: " + score, new Vector2(scoreRegion.X, scoreRegion.Y+ship_texture.Height / 2), Color.White);
             }
             spriteBatch.End();
         }
@@ -467,11 +469,33 @@ namespace Asteroids
 
         #endregion
 
+        #region HUD
+
+        public Vector2 ScoreRegion
+        {
+            get { return scoreRegion; }
+            set { scoreRegion = value; }
+        }
+
+        #endregion
+
         #region Getters & Setters
 
         public bool IsSpawnProtectionActive
         {
             get { return spawnProtectionTime > 0f; }
+        }
+
+        public bool IsGameOver
+        {
+            get { return lives <= 0; }
+            set { isGameOver = true; }
+        }
+
+        public bool IsThrusting
+        {
+            get { return isThrustEnabled; }
+            set { isThrustEnabled = value; }
         }
 
         public Bullet[] Bullets

@@ -33,8 +33,10 @@ namespace Asteroids
 
         #endregion
 
-        #region Properties
+        static SoundEffect menu_navigation;
+        static SoundEffect menu_selection;
 
+        #region Properties
 
         /// <summary>
         /// Gets the list of menu entries, so derived classes can add
@@ -62,6 +64,14 @@ namespace Asteroids
             TransitionOffTime = TimeSpan.FromSeconds(0.5);            
         }
 
+        public override void LoadContent()
+        {
+            ContentManager content = ScreenManager.Game.Content;
+
+            // Load Sounds
+            menu_navigation = content.Load<SoundEffect>("sound/menu_navigate");
+            menu_selection  = content.Load<SoundEffect>("sound/menu_selection");
+        }
 
         #endregion
 
@@ -79,6 +89,9 @@ namespace Asteroids
             {
                 selectedEntry--;
 
+                // Play a sound
+                menu_navigation.Play();
+
                 if (selectedEntry < 0)
                     selectedEntry = menuEntries.Count - 1;
             }
@@ -87,6 +100,9 @@ namespace Asteroids
             if (input.IsMenuDown(ControllingPlayer))
             {
                 selectedEntry++;
+
+                // Play a sound
+                menu_navigation.Play();
 
                 if (selectedEntry >= menuEntries.Count)
                     selectedEntry = 0;
@@ -115,6 +131,12 @@ namespace Asteroids
         /// </summary>
         protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex)
         {
+            // Bounds Checking
+            if (menuEntries.Count == 0) return;
+
+            // Play a sound
+            menu_selection.Play();
+            
             menuEntries[entryIndex].OnSelectEntry(playerIndex);
         }
 
@@ -124,6 +146,12 @@ namespace Asteroids
         /// </summary>
         protected virtual void OnCancel(PlayerIndex playerIndex)
         {
+            // Bounds Checking
+            if (menuEntries.Count == 0) return;
+
+            // Play a sound
+            menu_selection.Play();
+
             ExitScreen();
         }
 
@@ -133,6 +161,9 @@ namespace Asteroids
         /// </summary>
         protected void OnCancel(object sender, PlayerIndexEventArgs e)
         {
+            // Play a sound
+            menu_selection.Play();
+
             OnCancel(e.PlayerIndex);
         }
 

@@ -24,6 +24,7 @@ namespace Asteroids
 
         ContentManager content;
         AsteroidManager asteroidManager;
+        StarField starField;
 
         #endregion
 
@@ -53,6 +54,7 @@ namespace Asteroids
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             asteroidManager = new AsteroidManager(content, Mode.TITLE);
+            starField = new StarField(content);
         }
 
 
@@ -80,7 +82,8 @@ namespace Asteroids
         public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                        bool coveredByOtherScreen)
         {
-            asteroidManager.Update(gameTime);
+            starField.Update(gameTime);
+            asteroidManager.Update(gameTime);            
 
             base.Update(gameTime, otherScreenHasFocus, false);
         }
@@ -93,6 +96,7 @@ namespace Asteroids
         {
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
+            starField.Draw(spriteBatch);
             asteroidManager.Draw(spriteBatch);
         }
 

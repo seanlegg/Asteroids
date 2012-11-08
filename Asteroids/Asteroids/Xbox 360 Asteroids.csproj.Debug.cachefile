@@ -7,7 +7,6 @@ Content\font\xboxControllerSpriteFont.xnb
 Content\background\background.xnb
 Content\sprite\blank.xnb
 Content\sprite\gradient.xnb
-Content\sprite\cat.xnb
 Content\sprite\network\chat_able.xnb
 Content\sprite\network\chat_mute.xnb
 Content\sprite\network\chat_ready.xnb
@@ -47,3 +46,15 @@ Content\font\Menu.xnb
 Content\font\gamefont.xnb
 Content\font\menufont.xnb
 Content\effect\Explosion.xnb
+Content\sprite\loading_spinner.xnb
+Content\effect\Thrust.xnb
+Content\sound\asteroids-ship-fire.xnb
+Content\sound\asteroid_impact.xnb
+Content\sound\thrust.xnb
+Content\sound\asteroid_impact_bullet.xnb
+Content\sound\menu_navigate.xnb
+Content\sound\menu_selection.xnb
+Content\sound\background_old.xnb
+Content\sound\background.xnb
+Content\sound\background_old.wma
+Content\sound\background.wma

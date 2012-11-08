@@ -117,6 +117,7 @@
     <Compile Include="Component\MessageDisplayComponent.cs" />
     <Compile Include="Entity\Asteroid.cs" />
     <Compile Include="AsteroidsGame.cs" />
+    <Compile Include="Entity\StarField.cs" />
     <Compile Include="Event\OperationCompletedEventArgs.cs" />
     <Compile Include="Manager\AsteroidManager.cs" />
     <Compile Include="Entity\Bullet.cs" />

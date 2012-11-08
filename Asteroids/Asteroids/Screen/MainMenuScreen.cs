@@ -9,7 +9,6 @@
 
 #region Using Statements
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Net;
 #endregion
@@ -21,8 +20,6 @@ namespace Asteroids
     /// </summary>
     class MainMenuScreen : MenuScreen
     {
-        SoundEffect menu_navigation;
-
         #region Initialization
 
         /// <summary>
@@ -47,14 +44,6 @@ namespace Asteroids
             MenuEntries.Add(exitMenuEntry);
         }
 
-        public override void LoadContent()
-        {
-            ContentManager content = ScreenManager.Game.Content;
-
-            // Load Sounds
-            menu_navigation = content.Load<SoundEffect>("sound/menu_navigate");
-        }
-
         #endregion
 
         #region Handle Input
@@ -65,8 +54,6 @@ namespace Asteroids
         /// </summary>
         void SinglePlayerMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            menu_navigation.Play();
-
             LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen(null));
         }
 

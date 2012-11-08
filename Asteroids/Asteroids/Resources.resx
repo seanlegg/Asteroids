@@ -210,7 +210,7 @@ the lobby before you can join this session</value>
     <value>Lobby</value>
   </data>
   <data name="MainMenu" xml:space="preserve">
-    <value>Main Menu</value>
+    <value>IET Asteroids</value>
   </data>
   <data name="MessageBoxUsage" xml:space="preserve">
     <value>

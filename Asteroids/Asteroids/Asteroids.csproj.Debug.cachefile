@@ -54,4 +54,8 @@ Content\sound\background.xnb
 Content\sound\thrust.xnb
 Content\sound\asteroid_impact_bullet.xnb
 Content\sound\menu_navigate.xnb
+Content\sound\menu_selection.xnb
+Content\sound\background_old.xnb
+Content\sprite\star.xnb
 Content\sound\background.wma
+Content\sound\background_old.wma
