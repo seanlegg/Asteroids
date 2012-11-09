@@ -14,7 +14,7 @@ namespace Asteroids
         public static float constant_ttl   = 1.5f;
         public static float constant_speed = 8.0f;
 
-        public Bullet(Texture2D bullet_texture, Player owner)
+        public Bullet(Texture2D bullet_texture, Player owner, int index)
         {
             isActive   = false;
 
@@ -23,7 +23,7 @@ namespace Asteroids
             timeToLive = constant_ttl;
 
             // Generate Id
-            id = this.GetHashCode();
+            id = index;
 
             // Texture
             this.bullet_texture = bullet_texture;

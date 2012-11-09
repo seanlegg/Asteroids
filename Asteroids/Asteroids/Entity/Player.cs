@@ -106,7 +106,7 @@ namespace Asteroids
 
             for (int i = 0; i < maxBullets; i++)
             {
-                bullets[i] = new Bullet(bullet_texture, this);
+                bullets[i] = new Bullet(bullet_texture, this, i);
             }
 
             position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
@@ -243,6 +243,7 @@ namespace Asteroids
             for (int i = 0; i < bullets.Length; i++)
             {
                 Bullet b = bullets[i];
+
                 if (b != null)
                 {
                     b.Update(gameTime);
@@ -317,7 +318,8 @@ namespace Asteroids
             for (i = 0; i < bullets.Length; i++)
             {
                 Bullet b = bullets[i];
-                if (b != null)
+
+                if (b != null && b.isActive)
                 {
                     b.Draw(spriteBatch);
                 }
@@ -436,8 +438,6 @@ namespace Asteroids
 
                         // Play a sound - (http://www.freesound.org/people/CGEffex/sounds/96692/)
                         bullet_fire.Play();
-
-                        Console.WriteLine("Found Free Bullet At Index : " + i);
                     }
                 }
             }
@@ -445,11 +445,15 @@ namespace Asteroids
 
         public Bullet FindBulletById(int id)
         {
-            for (int i = 0; i < bullets.Length; i++)
-            {
-                if (bullets[i].Id == id) return bullets[i];
-            }
-            return null;
+            return bullets[id];
+        }
+
+        public void UpdateBulletById(int index, float timeToLive, Vector2 position, Vector2 velocity)
+        {
+            bullets[index].isActive   = true;
+            bullets[index].TimeToLive = timeToLive;
+            bullets[index].Position   = position;
+            bullets[index].Velocity   = velocity;
         }
 
         #region Collision Detection

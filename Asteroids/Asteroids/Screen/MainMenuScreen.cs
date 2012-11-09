@@ -11,6 +11,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace Asteroids
@@ -42,6 +43,9 @@ namespace Asteroids
             MenuEntries.Add(singlePlayerMenuEntry);
             MenuEntries.Add(systemLinkMenuEntry);
             MenuEntries.Add(exitMenuEntry);
+
+            // Stop any background music
+            MediaPlayer.Stop();
         }
 
         #endregion

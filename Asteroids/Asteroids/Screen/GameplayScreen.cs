@@ -34,12 +34,13 @@ namespace Asteroids
         {
             GameData,
             PlayerData,
+            PlayerBullets,
             PlayerDeath,
             PlayerSpawn,
             GameWon,
         };
 
-        private const int updatesBetweenGameDataPackets = 30;
+        private const int updatesBetweenGameDataPackets = 5;
         private const int updatesBetweenStatusPackets   = 0;        
 
         #endregion
@@ -312,6 +313,31 @@ namespace Asteroids
             }
         }
 
+        private void UpdatePlayerBullets(NetworkGamer sender)
+        {
+            if (sender != null)
+            {
+                Player player = sender.Tag as Player;
+
+                for (int i = 0; i < player.Bullets.Length; i++)
+                {
+                    // Check if the bullet is active
+                    bool isActive = packetReader.ReadBoolean();
+
+                    if (isActive)
+                    {
+                        // Try and retreive the bullet
+                        Bullet b = player.FindBulletById(i);
+
+                        if (b != null)
+                        {
+                            player.UpdateBulletById(i, (float)packetReader.ReadDouble(), packetReader.ReadVector2(), packetReader.ReadVector2());
+                        }
+                    }
+                }
+            }
+        }
+
         private void SendLocalShipData()
         {
             if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
@@ -319,7 +345,7 @@ namespace Asteroids
                 Player player = networkSession.LocalGamers[0].Tag as Player;
 
                 if (player != null)
-                {
+                {                   
                     packetWriter.Write((int)PacketTypes.PlayerData);
                     packetWriter.Write(player.Position);
                     packetWriter.Write(player.Velocity);
@@ -328,6 +354,35 @@ namespace Asteroids
                     packetWriter.Write(player.isActive);
                     packetWriter.Write(player.IsGameOver);
 
+                    networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
+                }
+            }
+        }
+
+        private void SendLocalBulletData()
+        {
+            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
+            {
+                Player player = networkSession.LocalGamers[0].Tag as Player;
+
+                if (player != null)
+                {
+                    packetWriter.Write((int)PacketTypes.PlayerBullets);
+
+                    for (int i = 0; i < player.Bullets.Length; i++)
+                    {
+                        if (player.Bullets[i].isActive)
+                        {
+                            packetWriter.Write(player.Bullets[i].isActive);
+                            packetWriter.Write(player.Bullets[i].TimeToLive);
+                            packetWriter.Write(player.Bullets[i].Position);
+                            packetWriter.Write(player.Bullets[i].Velocity);
+                        }
+                        else
+                        {
+                            packetWriter.Write(player.Bullets[i].isActive);
+                        }
+                    }
                     networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
                 }
             }
@@ -375,34 +430,14 @@ namespace Asteroids
                         case PacketTypes.PlayerData:
                             UpdateShipData(sender);
                             break;
+                        case PacketTypes.PlayerDeath:
+                            Player p = sender.Tag as Player;
+                            
+                            break;
+                        case PacketTypes.PlayerBullets:
+                            UpdatePlayerBullets(sender);
+                            break;
                     }
-
-                    // Bullets
-                    /*
-                    int activeBullets = packetReader.ReadInt32();
-
-                    for (int i = 0; i < activeBullets; i++)
-                    {
-                        int id     = packetReader.ReadInt32();
-                        double ttl = packetReader.ReadDouble();
-
-                        // Try and retreive the bullet
-                        Bullet b = remotePlayer.FindBulletById(id);
-
-                        if (b == null)
-                        {
-                            remotePlayer.FireBullet(id, packetReader.ReadVector2(), packetReader.ReadVector2());
-                        }
-                        else
-                        {
-                            // Update an existing bullet
-                            b.isActive   = true;
-                            b.TimeToLive = ttl;
-                            b.Position   = packetReader.ReadVector2();
-                            b.Velocity   = packetReader.ReadVector2();
-                        }
-                    }
-                     * */
                 }
             }
         }
@@ -485,7 +520,9 @@ namespace Asteroids
                     if (updatesSinceStatusPacket >= updatesBetweenStatusPackets)
                     {
                         updatesSinceStatusPacket = 0;
+
                         SendLocalShipData();
+                        SendLocalBulletData();
                     }
                     else
                     {
@@ -533,7 +570,7 @@ namespace Asteroids
                 }
 
                 // If all players are in the gameOver state then return to the lobby
-                if (shouldReturnToLobby)
+                if (networkSession.IsHost && shouldReturnToLobby)
                 {
                     if (networkSession.SessionState == NetworkSessionState.Playing)
                     {
@@ -657,17 +694,6 @@ namespace Asteroids
             // Render Asteroids
             asteroidManager.Draw(spriteBatch);   
 
-            spriteBatch.Begin();
-
-            if (networkSession != null)
-            {
-                string message = "Players: " + networkSession.AllGamers.Count;
-                Vector2 messagePosition = new Vector2(100, 480);
-                spriteBatch.DrawString(gameFont, message, messagePosition, Color.White);
-            }
-
-            spriteBatch.End();
-
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0 || pauseAlpha > 0)
             {
@@ -693,6 +719,9 @@ namespace Asteroids
                     if (Collision.BoundingSphere(a, p) == true)
                     {
                         asteroidManager.HandleCollision(a, p);
+
+                        // Notifiy others players on the ship death
+                        SendLocalShipDeath();
                     }
 
                     // Check for collisions with bullets

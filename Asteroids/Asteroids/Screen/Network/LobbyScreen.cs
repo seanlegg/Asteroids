@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace Asteroids
@@ -49,6 +50,9 @@ namespace Asteroids
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            // Stop any background music
+            MediaPlayer.Stop();
         }
 
 
