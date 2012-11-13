@@ -163,13 +163,18 @@ namespace Asteroids
 
         public void Respawn()
         {
-            isActive = true;            
+            isActive = true;
 
-            spawnProtectionTime = spawnProtection;
+            EnableSpawnProtection();
 
             velocity = Vector2.Zero;
             position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
             rotation = 0.0f;
+        }
+
+        public void EnableSpawnProtection()
+        {
+            spawnProtectionTime = spawnProtection;
         }
 
         public void DecrementLives()
@@ -407,12 +412,6 @@ namespace Asteroids
             if (input.IsNewKeyPress(Keys.Space, playerIndex, out playerIndex) || input.IsNewButtonPress(Buttons.A, playerIndex, out playerIndex))
             {
                 FireBullet();
-
-                //Vector2 bulletVelocity = new Vector2(
-                //     (float)Math.Sin(rotation) * Bullet.constant_speed,
-                //    -(float)Math.Cos(rotation) * Bullet.constant_speed
-                //);                
-                //FireBullet(0, position, bulletVelocity);
             }
             else
             {
@@ -589,6 +588,7 @@ namespace Asteroids
         public int Lives
         {
             get { return lives; }
+            set { lives = value; }
         }
 
         public int Score

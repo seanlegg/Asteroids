@@ -34,14 +34,16 @@ namespace Asteroids
         {
             GameData,
             PlayerData,
+            PlayerShip,
             PlayerBullets,
             PlayerDeath,
             PlayerSpawn,
             GameWon,
         };
 
-        private const int updatesBetweenGameDataPackets = 5;
-        private const int updatesBetweenStatusPackets   = 0;        
+        private const int updatesBetweenGameDataPackets   = 20;
+        private const int updatesBetweenPlayerDataPackets = 60;
+        private const int updatesBetweenStatusPackets     =  0;        
 
         #endregion
 
@@ -124,8 +126,9 @@ namespace Asteroids
         private PacketReader packetReader = new PacketReader();
         private PacketWriter packetWriter = new PacketWriter();
 
-        private int updatesSinceGameDataSend = 0;
-        private int updatesSinceStatusPacket = 0;
+        private int updatesSinceGameDataSend   = 0;
+        private int updatesSincePlayerDataSend = 0;
+        private int updatesSinceStatusPacket   = 0;
 
         #endregion
 
@@ -210,7 +213,25 @@ namespace Asteroids
             level = 1;
 
             // Initialize Asteroids
-            asteroidManager.Init();
+            if (networkSession == null)
+            {
+                asteroidManager.Init();
+            }
+            else
+            {
+                // Only the host should initialise the asteroid manager
+                if (networkSession.IsHost)
+                {
+                    asteroidManager.Init();
+                    {
+                        SendGameData();
+                    }
+                }
+                else
+                {
+                    asteroidManager.Asteroids.Clear();
+                }
+            }
 
             // Initialize Players
             if (networkSession == null)
@@ -222,7 +243,7 @@ namespace Asteroids
             }
             else
             {
-                int hIndex = 0;
+                int hIndex = 0; // HUD Region Index
 
                 foreach (NetworkGamer gamer in networkSession.AllGamers)
                 {
@@ -244,10 +265,9 @@ namespace Asteroids
                 }
             }
 
-            // Play the background music
-            
+            // Play the background music            
             MediaPlayer.Play(backgroundMusic);
-            MediaPlayer.Volume = 20;
+            MediaPlayer.Volume = 0.1f;
         }
 
         /// <summary>
@@ -295,6 +315,20 @@ namespace Asteroids
             }
         }
 
+        private void UpdatePlayerData(NetworkGamer sender)
+        {
+            if (sender != null)
+            {
+                Player player = sender.Tag as Player;
+
+                if (player != null)
+                {
+                    player.Lives = packetReader.ReadInt32();
+                    player.Score = packetReader.ReadInt32();
+                }
+            }
+        }
+
         private void UpdateShipData(NetworkGamer sender)
         {
             if (sender != null)
@@ -319,28 +353,19 @@ namespace Asteroids
             }
         }
 
-        private void UpdatePlayerBullets(NetworkGamer sender)
+        private void SendLocalPlayerData()
         {
-            if (sender != null)
+            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
             {
-                Player player = sender.Tag as Player;
+                Player player = networkSession.LocalGamers[0].Tag as Player;
 
-                for (int i = 0; i < player.Bullets.Length; i++)
+                if (player != null)
                 {
-                    // Check if the bullet is active
-                    bool isActive = packetReader.ReadBoolean();
-
-                    if (isActive)
-                    {
-                        // Try and retreive the bullet
-                        Bullet b = player.FindBulletById(i);
-
-                        if (b != null)
-                        {
-                            player.UpdateBulletById(i, (float)packetReader.ReadDouble(), packetReader.ReadVector2(), packetReader.ReadVector2());
-                        }
-                    }
+                    packetWriter.Write((int)PacketTypes.PlayerData);
+                    packetWriter.Write(player.Lives);
+                    packetWriter.Write(player.Score);
                 }
+
             }
         }
 
@@ -351,48 +376,29 @@ namespace Asteroids
                 Player player = networkSession.LocalGamers[0].Tag as Player;
 
                 if (player != null)
-                {                   
-                    packetWriter.Write((int)PacketTypes.PlayerData);
+                {
+                    packetWriter.Write((int)PacketTypes.PlayerShip);
+
                     packetWriter.Write(player.Position);
                     packetWriter.Write(player.Velocity);
                     packetWriter.Write(player.Rotation);
+
                     packetWriter.Write(player.IsThrusting);
                     packetWriter.Write(player.isActive);
                     packetWriter.Write(player.IsGameOver);
                     packetWriter.Write(player.IsShooting);
 
-                    networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
+                    networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.None);
                 }
             }
         }
 
-        private void SendLocalBulletData()
+        private void SendAsteroidUpdate()
         {
-            //if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
-            //{
-            //    Player player = networkSession.LocalGamers[0].Tag as Player;
-
-            //    if (player != null)
-            //    {
-            //        packetWriter.Write((int)PacketTypes.PlayerBullets);
-
-            //        for (int i = 0; i < player.Bullets.Length; i++)
-            //        {
-            //            if (player.Bullets[i].isActive)
-            //            {
-            //                packetWriter.Write(player.Bullets[i].isActive);
-            //                packetWriter.Write(player.Bullets[i].TimeToLive);
-            //                packetWriter.Write(player.Bullets[i].Position);
-            //                packetWriter.Write(player.Bullets[i].Velocity);
-            //            }
-            //            else
-            //            {
-            //                packetWriter.Write(player.Bullets[i].isActive);
-            //            }
-            //        }
-            //        networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
-            //    }
-            //}
+            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
+            {
+                //networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.None);
+            }
         }
 
         private void SendLocalShipDeath()
@@ -406,6 +412,23 @@ namespace Asteroids
 
                 networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.ReliableInOrder);
             }
+        }
+
+        private void SendGameData()
+        {
+            // Write each of the asteroids
+            packetWriter.Write((int)PacketTypes.GameData);
+            packetWriter.Write(asteroidManager.Asteroids.Count);
+
+            for (int i = 0; i < asteroidManager.Asteroids.Count; i++)
+            {
+                Asteroid asteroid = asteroidManager.Asteroids[i];
+
+                packetWriter.Write((int)asteroid.Type);
+                packetWriter.Write(asteroid.Position);
+                packetWriter.Write(asteroid.Velocity);
+            }
+            networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
         }
 
         void ReceiveNetworkData()
@@ -435,14 +458,14 @@ namespace Asteroids
                             UpdateGameData();
                             break;
                         case PacketTypes.PlayerData:
+                            UpdatePlayerData(sender);
+                            break;
+                        case PacketTypes.PlayerShip:
                             UpdateShipData(sender);
                             break;
                         case PacketTypes.PlayerDeath:
                             Player p = sender.Tag as Player;
                             
-                            break;
-                        case PacketTypes.PlayerBullets:
-                            UpdatePlayerBullets(sender);
                             break;
                     }
                 }
@@ -484,19 +507,7 @@ namespace Asteroids
                         {
                             updatesSinceGameDataSend = 0;
 
-                            // Write each of the asteroids
-                            packetWriter.Write((int)PacketTypes.GameData);
-                            packetWriter.Write(asteroidManager.Asteroids.Count);
-
-                            for (int i = 0; i < asteroidManager.Asteroids.Count; i++)
-                            {
-                                Asteroid asteroid = asteroidManager.Asteroids[i];
-
-                                packetWriter.Write((int)asteroid.Type);
-                                packetWriter.Write(asteroid.Position);
-                                packetWriter.Write(asteroid.Velocity);                                
-                            }
-                            gamer.SendData(packetWriter, SendDataOptions.InOrder);
+                            //SendGameData();
                         }
                         else
                         {
@@ -523,13 +534,24 @@ namespace Asteroids
                         }
                     }
 
-                    // Send Player Data  
+                    // Send Player Data
+                    if (updatesSincePlayerDataSend >= updatesBetweenPlayerDataPackets)
+                    {
+                        updatesSincePlayerDataSend = 0;
+
+                        SendLocalPlayerData();
+                    }
+                    else
+                    {
+                        updatesSincePlayerDataSend++;
+                    }
+
+                    // Send Ship Data  
                     if (updatesSinceStatusPacket >= updatesBetweenStatusPackets)
                     {
                         updatesSinceStatusPacket = 0;
 
                         SendLocalShipData();
-                        //SendLocalBulletData();
                     }
                     else
                     {
@@ -548,6 +570,24 @@ namespace Asteroids
                 if (asteroidManager.Asteroids.Count == 0)
                 {
                     asteroidManager.StartLevel(level++);
+
+                    // Enable Spawn Protection
+                    if (networkSession == null)
+                    {
+                        players[0].EnableSpawnProtection();
+                    }
+                    else
+                    {
+                        foreach (NetworkGamer gamer in networkSession.AllGamers)
+                        {
+                           Player p = gamer.Tag as Player;
+
+                           if (p != null)
+                           {
+                               p.EnableSpawnProtection();
+                           }
+                        }
+                    }
                 }
 
                 // Handle collision detection
@@ -727,6 +767,9 @@ namespace Asteroids
                     {
                         asteroidManager.HandleCollision(a, p);
 
+                        // Notify Players about the new state of this asteroid
+                        SendAsteroidUpdate();
+
                         // Notifiy others players on the ship death
                         SendLocalShipDeath();
                     }
@@ -742,6 +785,9 @@ namespace Asteroids
                             if (Collision.BoundingSphere(b, a))
                             {
                                 asteroidManager.HandleCollision(a, b);
+
+                                // Notify Players about the new state of this asteroid
+                                // SendAsteroidUpdate();
                             }
                         }
                     }
