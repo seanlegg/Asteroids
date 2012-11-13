@@ -309,6 +309,12 @@ namespace Asteroids
                     player.IsThrusting = packetReader.ReadBoolean();
                     player.isActive    = packetReader.ReadBoolean();
                     player.IsGameOver  = packetReader.ReadBoolean();
+
+                    // Check if the player is shooting
+                    if (packetReader.ReadBoolean() == true)
+                    {
+                        player.FireBullet();
+                    }
                 }
             }
         }
@@ -353,6 +359,7 @@ namespace Asteroids
                     packetWriter.Write(player.IsThrusting);
                     packetWriter.Write(player.isActive);
                     packetWriter.Write(player.IsGameOver);
+                    packetWriter.Write(player.IsShooting);
 
                     networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
                 }
@@ -361,31 +368,31 @@ namespace Asteroids
 
         private void SendLocalBulletData()
         {
-            if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
-            {
-                Player player = networkSession.LocalGamers[0].Tag as Player;
+            //if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
+            //{
+            //    Player player = networkSession.LocalGamers[0].Tag as Player;
 
-                if (player != null)
-                {
-                    packetWriter.Write((int)PacketTypes.PlayerBullets);
+            //    if (player != null)
+            //    {
+            //        packetWriter.Write((int)PacketTypes.PlayerBullets);
 
-                    for (int i = 0; i < player.Bullets.Length; i++)
-                    {
-                        if (player.Bullets[i].isActive)
-                        {
-                            packetWriter.Write(player.Bullets[i].isActive);
-                            packetWriter.Write(player.Bullets[i].TimeToLive);
-                            packetWriter.Write(player.Bullets[i].Position);
-                            packetWriter.Write(player.Bullets[i].Velocity);
-                        }
-                        else
-                        {
-                            packetWriter.Write(player.Bullets[i].isActive);
-                        }
-                    }
-                    networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
-                }
-            }
+            //        for (int i = 0; i < player.Bullets.Length; i++)
+            //        {
+            //            if (player.Bullets[i].isActive)
+            //            {
+            //                packetWriter.Write(player.Bullets[i].isActive);
+            //                packetWriter.Write(player.Bullets[i].TimeToLive);
+            //                packetWriter.Write(player.Bullets[i].Position);
+            //                packetWriter.Write(player.Bullets[i].Velocity);
+            //            }
+            //            else
+            //            {
+            //                packetWriter.Write(player.Bullets[i].isActive);
+            //            }
+            //        }
+            //        networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
+            //    }
+            //}
         }
 
         private void SendLocalShipDeath()
@@ -522,7 +529,7 @@ namespace Asteroids
                         updatesSinceStatusPacket = 0;
 
                         SendLocalShipData();
-                        SendLocalBulletData();
+                        //SendLocalBulletData();
                     }
                     else
                     {

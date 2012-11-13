@@ -32,6 +32,7 @@ namespace Asteroids
         private Vector2 velocity;
 
         public  bool wasKilled;
+        private bool isShooting;
         private bool isGameOver;
 
         private float speed;
@@ -252,8 +253,10 @@ namespace Asteroids
 
             if (isActive == false)
             {
+                //Console.WriteLine("Ship is inActive! lives = " + lives + " explosionTimer = " + gameOverExplosionTimer);
+
                 // Only allow the explosion particles to update for a short amount of time in the GameOver state
-                if (lives == 0)
+                if (lives <= 0)
                 {
                     gameOverExplosionTimer -= dt;
                     if (gameOverExplosionTimer < 0f)
@@ -403,20 +406,60 @@ namespace Asteroids
 
             if (input.IsNewKeyPress(Keys.Space, playerIndex, out playerIndex) || input.IsNewButtonPress(Buttons.A, playerIndex, out playerIndex))
             {
-                Vector2 bulletVelocity = new Vector2(
-                     (float)Math.Sin(rotation) * Bullet.constant_speed,
-                    -(float)Math.Cos(rotation) * Bullet.constant_speed
-                );
-                FireBullet(0, position, bulletVelocity);
+                FireBullet();
+
+                //Vector2 bulletVelocity = new Vector2(
+                //     (float)Math.Sin(rotation) * Bullet.constant_speed,
+                //    -(float)Math.Cos(rotation) * Bullet.constant_speed
+                //);                
+                //FireBullet(0, position, bulletVelocity);
+            }
+            else
+            {
+                isShooting = false;
+            }
+        }
+
+        public void FireBullet()
+        {
+            isShooting = false;
+
+            // Find the next free position
+            for (int i = 0; i < bullets.Length && isShooting == false; i++)
+            {
+                Bullet b = bullets[i];
+
+                if (b != null)
+                {
+                    if (b.isActive == false)
+                    {
+                        Console.WriteLine("Found free bullet at index " + i);
+
+                        Vector2 bVelocity = new Vector2(
+                             (float)Math.Sin(rotation) * Bullet.constant_speed,
+                            -(float)Math.Cos(rotation) * Bullet.constant_speed
+                        ); 
+                        b.Position   = position;
+                        b.Velocity   = bVelocity;
+                        b.TimeToLive = Bullet.constant_ttl;
+                        b.isActive   = true;
+
+                        // We have fired the bullet
+                        isShooting = true;
+
+                        // Play a sound - (http://www.freesound.org/people/CGEffex/sounds/96692/)
+                        bullet_fire.Play();
+                    }
+                }
             }
         }
 
         public void FireBullet(int id, Vector2 position, Vector2 velocity)
         {
-            bool fired = false;
+            isShooting = false;
 
             // Find the next free position
-            for (int i = 0; i < bullets.Length && fired == false; i++)
+            for (int i = 0; i < bullets.Length && isShooting == false; i++)
             {
                 Bullet b = bullets[i];
 
@@ -434,7 +477,7 @@ namespace Asteroids
                         b.isActive   = true;
                         
                         // We have fired the bullet
-                        fired = true;
+                        isShooting = true;
 
                         // Play a sound - (http://www.freesound.org/people/CGEffex/sounds/96692/)
                         bullet_fire.Play();
@@ -500,6 +543,11 @@ namespace Asteroids
         {
             get { return isThrustEnabled; }
             set { isThrustEnabled = value; }
+        }
+
+        public bool IsShooting
+        {
+            get { return isShooting; }
         }
 
         public Bullet[] Bullets
