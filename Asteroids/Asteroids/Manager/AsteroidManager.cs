@@ -32,7 +32,8 @@ namespace Asteroids
         #region Properties
 
         private List<Asteroid> asteroids;
-        //private Asteroid[] asteroids;
+
+        private int currentId;
 
         private Texture2D texture_small;
         private Texture2D texture_medium;
@@ -77,6 +78,9 @@ namespace Asteroids
             int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
             int n = 1000;
 
+            // Reset the Id
+            currentId = 0;
+
             for (int i = 0; i < 5; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
@@ -85,7 +89,9 @@ namespace Asteroids
                 float rotation = rand.Next(0, 359);
                 float rotationSpeed = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
 
-                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
+                Asteroid asteroid = new Asteroid(currentId++, AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed);
+
+                asteroids.Add(asteroid);
             }
         }
 
@@ -98,6 +104,9 @@ namespace Asteroids
             int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
             int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
 
+            // Reset the Id
+            currentId = 0;
+
             for (int i = 0; i < (level*5); i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));     
@@ -106,7 +115,7 @@ namespace Asteroids
                 float rotation      = rand.Next(0, 359);
                 float rotationSpeed = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
 
-                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
+                asteroids.Add(new Asteroid(currentId++, AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
             }
         }
 
@@ -120,6 +129,9 @@ namespace Asteroids
             int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
             int n = 1000;
 
+            // Reset the Id
+            currentId = 0;
+
             for (int i = 0; i < max_asteroids_title; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
@@ -128,7 +140,7 @@ namespace Asteroids
                 float rotation      = rand.Next(0, 359);
                 float rotationSpeed = ((float)Math.Sin(rand.Next(0, 1000))) * 0.05f;
 
-                asteroids.Add(new Asteroid(AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
+                asteroids.Add(new Asteroid(currentId++, AsteroidType.LARGE, texture_large, position, velocity, rotation, rotationSpeed));
             }
         }
 
@@ -159,7 +171,7 @@ namespace Asteroids
         {
             Texture2D texture = (type == AsteroidType.LARGE ? texture_large : (type == AsteroidType.MEDIUM ? texture_medium : texture_small));
 
-            asteroids.Add(new Asteroid(AsteroidType.LARGE, texture, position, velocity, rotation, rotationSpeed));
+            asteroids.Add(new Asteroid(currentId++, AsteroidType.LARGE, texture, position, velocity, rotation, rotationSpeed));
         }
 
         public void SplitAsteroid(Asteroid parent, AsteroidType type)
@@ -179,13 +191,13 @@ namespace Asteroids
 
             if (type == AsteroidType.MEDIUM)
             {
-                a = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v1, r1, s1);
-                b = new Asteroid(AsteroidType.MEDIUM, texture_medium, parent.Position, v2, r2, s2);
+                a = new Asteroid(currentId++, AsteroidType.MEDIUM, texture_medium, parent.Position, v1, r1, s1);
+                b = new Asteroid(currentId++, AsteroidType.MEDIUM, texture_medium, parent.Position, v2, r2, s2);
             } 
             else if (type == AsteroidType.SMALL)
             {
-                a = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v1, r1, s1);
-                b = new Asteroid(AsteroidType.SMALL, texture_small, parent.Position, v2, r2, s2);
+                a = new Asteroid(currentId++, AsteroidType.SMALL, texture_small, parent.Position, v1, r1, s1);
+                b = new Asteroid(currentId++, AsteroidType.SMALL, texture_small, parent.Position, v2, r2, s2);
             }
             asteroids.Add(a);
             asteroids.Add(b);

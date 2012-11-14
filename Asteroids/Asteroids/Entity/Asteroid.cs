@@ -15,6 +15,8 @@ namespace Asteroids
     class Asteroid : Collidable
     {
         private AsteroidType type;
+        //private Guid guid;
+        private int id;
 
         private Texture2D texture;
 
@@ -26,12 +28,14 @@ namespace Asteroids
         private float rotationSpeed;
         private float speed = 1.5f;
 
-        public Asteroid(AsteroidType type, Texture2D texture, Vector2 position, Vector2 velocity, float rotation, float rotationSpeed)
+        public Asteroid(int id, AsteroidType type, Texture2D texture, Vector2 position, Vector2 velocity, float rotation, float rotationSpeed)
         {
             Random rand = new Random();
 
             this.isActive = true;
 
+            //this.guid     = Guid.NewGuid();
+            this.id = id;
             this.type     = type;
             this.texture  = texture;
             this.position = position;
@@ -97,6 +101,12 @@ namespace Asteroids
         public AsteroidType Type
         {
             get { return type; }
+        }
+
+        public int Id
+        {
+            get { return id; }
+            set { id = value; }
         }
 
         public Vector2 Position

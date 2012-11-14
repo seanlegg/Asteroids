@@ -32,6 +32,7 @@ namespace Asteroids
 
         public enum PacketTypes
         {
+            AsteroidData,
             GameData,
             PlayerData,
             PlayerShip,
@@ -41,7 +42,7 @@ namespace Asteroids
             GameWon,
         };
 
-        private const int updatesBetweenGameDataPackets   = 20;
+        private const int updatesBetweenGameDataPackets   =  0; // Ensure asteroids are in the correct position every 5 seconds
         private const int updatesBetweenPlayerDataPackets = 60;
         private const int updatesBetweenStatusPackets     =  0;        
 
@@ -61,7 +62,10 @@ namespace Asteroids
 
         private StarField starField;
 
+        private Vector2[] spawnPositions;
         private Vector2[] scoreRegions;
+
+        private float[] spawnRotations = { 90.0f, 270.0f, 90.0f, 270.0f };
 
         private int level;
 
@@ -147,13 +151,25 @@ namespace Asteroids
 
             players = new List<Player>();
 
+            int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
+            int h = AsteroidsGame.graphics.PreferredBackBufferHeight;           
+
+            // Spawn Positions
+            spawnPositions = new Vector2[4];
+            {
+                int spawnOffset = 120;
+
+                spawnPositions[0] = new Vector2(    spawnOffset,     spawnOffset);
+                spawnPositions[1] = new Vector2(w - spawnOffset,     spawnOffset);
+                spawnPositions[2] = new Vector2(    spawnOffset, h - spawnOffset);
+                spawnPositions[3] = new Vector2(w - spawnOffset, h - spawnOffset);
+            }
+
             // HUD - Score Regions (Positions)
             scoreRegions = new Vector2[4];
-            {
-                int w = AsteroidsGame.graphics.PreferredBackBufferWidth;
-                int h = AsteroidsGame.graphics.PreferredBackBufferHeight;
+            {               
                 int offset = 5;    // offset
-                int hWidth  = 115; // hud width
+                int hWidth = 115; // hud width
                 int hHeight = 45;  // hud height
 
                 scoreRegions[0] = new Vector2(offset, offset);
@@ -244,6 +260,7 @@ namespace Asteroids
             else
             {
                 int hIndex = 0; // HUD Region Index
+                int spawnRegion = 0;
 
                 foreach (NetworkGamer gamer in networkSession.AllGamers)
                 {
@@ -258,9 +275,17 @@ namespace Asteroids
                         p.onGameOver += OnGameOver;
                     }
 
+                    p.SpawnPosition = spawnPositions[spawnRegion];
+                    p.Position      = p.SpawnPosition;
+
+                    p.SpawnRotation = spawnRotations[spawnRegion];
+                    p.Rotation = p.SpawnRotation;
+
                     // Initialise the HUD
+                    p.Score = 0;
                     p.ScoreRegion = scoreRegions[hIndex];
 
+                    spawnRegion++;
                     hIndex++;
                 }
             }
@@ -311,7 +336,10 @@ namespace Asteroids
 
             for (int i = 0; i < numberAsteroids; i++)
             {
-                asteroidManager.AddAsteroid((AsteroidType)packetReader.ReadInt32(), packetReader.ReadVector2(), packetReader.ReadVector2(), 0, 0);
+                int id = packetReader.ReadInt32();
+                AsteroidType pType = (AsteroidType)packetReader.ReadInt32();
+
+                asteroidManager.AddAsteroid(pType, packetReader.ReadVector2(), packetReader.ReadVector2(), 0, 0);
             }
         }
 
@@ -327,6 +355,16 @@ namespace Asteroids
                     player.Score = packetReader.ReadInt32();
                 }
             }
+        }
+
+        private void UpdateAsteroidData()
+        {
+            if (packetReader == null)
+            {
+                throw new ArgumentNullException("packetReader");
+            }
+
+            // Update Asteroids
         }
 
         private void UpdateShipData(NetworkGamer sender)
@@ -365,7 +403,6 @@ namespace Asteroids
                     packetWriter.Write(player.Lives);
                     packetWriter.Write(player.Score);
                 }
-
             }
         }
 
@@ -397,7 +434,10 @@ namespace Asteroids
         {
             if ((networkSession != null) && (networkSession.LocalGamers.Count > 0))
             {
-                //networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.None);
+                packetWriter.Write((int)PacketTypes.AsteroidData);
+
+
+                networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.None);
             }
         }
 
@@ -424,11 +464,12 @@ namespace Asteroids
             {
                 Asteroid asteroid = asteroidManager.Asteroids[i];
 
-                packetWriter.Write((int)asteroid.Type);
+                packetWriter.Write(asteroid.Id);
+                packetWriter.Write((int)asteroid.Type);                
                 packetWriter.Write(asteroid.Position);
                 packetWriter.Write(asteroid.Velocity);
             }
-            networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.InOrder);
+            networkSession.LocalGamers[0].SendData(packetWriter, SendDataOptions.None);
         }
 
         void ReceiveNetworkData()
@@ -507,7 +548,7 @@ namespace Asteroids
                         {
                             updatesSinceGameDataSend = 0;
 
-                            //SendGameData();
+                            SendGameData();
                         }
                         else
                         {
@@ -767,11 +808,8 @@ namespace Asteroids
                     {
                         asteroidManager.HandleCollision(a, p);
 
-                        // Notify Players about the new state of this asteroid
-                        SendAsteroidUpdate();
-
                         // Notifiy others players on the ship death
-                        SendLocalShipDeath();
+                        // SendLocalShipDeath();
                     }
 
                     // Check for collisions with bullets
@@ -785,9 +823,6 @@ namespace Asteroids
                             if (Collision.BoundingSphere(b, a))
                             {
                                 asteroidManager.HandleCollision(a, b);
-
-                                // Notify Players about the new state of this asteroid
-                                // SendAsteroidUpdate();
                             }
                         }
                     }

@@ -45,6 +45,10 @@ namespace Asteroids
         private float spawnProtectionTime    = 0f;
         private float gameOverExplosionTimer = 1f;
 
+        // Spawn
+        Vector2 spawnPosition;
+        float spawnRotation;
+
         // Heads Up Display (HUD)
         Vector2 scoreRegion;
         
@@ -118,6 +122,9 @@ namespace Asteroids
             speed    = 5.0f;
             isActive = true;
 
+            spawnPosition = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
+            spawnRotation = 0.0f;
+
             // Create Particle Renderer
             particleRenderer = new SpriteBatchRenderer
             {
@@ -168,8 +175,8 @@ namespace Asteroids
             EnableSpawnProtection();
 
             velocity = Vector2.Zero;
-            position = new Vector2((AsteroidsGame.screenWidth / 2) - (ship_texture.Width / 2), (AsteroidsGame.screenHeight / 2) - (ship_texture.Height / 2));
-            rotation = 0.0f;
+            position = spawnPosition;
+            rotation = spawnRotation;
         }
 
         public void EnableSpawnProtection()
@@ -258,8 +265,6 @@ namespace Asteroids
 
             if (isActive == false)
             {
-                //Console.WriteLine("Ship is inActive! lives = " + lives + " explosionTimer = " + gameOverExplosionTimer);
-
                 // Only allow the explosion particles to update for a short amount of time in the GameOver state
                 if (lives <= 0)
                 {
@@ -432,8 +437,6 @@ namespace Asteroids
                 {
                     if (b.isActive == false)
                     {
-                        Console.WriteLine("Found free bullet at index " + i);
-
                         Vector2 bVelocity = new Vector2(
                              (float)Math.Sin(rotation) * Bullet.constant_speed,
                             -(float)Math.Cos(rotation) * Bullet.constant_speed
@@ -571,6 +574,18 @@ namespace Asteroids
                 }
                 return count;
             }
+        }
+
+        public Vector2 SpawnPosition
+        {
+            get { return spawnPosition; }
+            set { spawnPosition = value; }
+        }
+
+        public float SpawnRotation
+        {
+            get { return spawnRotation; }
+            set { spawnRotation = value; }
         }
 
         public Vector2 Position
