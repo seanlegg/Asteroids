@@ -12,6 +12,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Media;
+using System;
+using Microsoft.Xna.Framework.Graphics;
 #endregion
 
 namespace Asteroids
@@ -21,6 +23,8 @@ namespace Asteroids
     /// </summary>
     class MainMenuScreen : MenuScreen
     {
+        private Texture2D blank;
+
         #region Initialization
 
         /// <summary>
@@ -31,21 +35,73 @@ namespace Asteroids
         {
             // Create our menu entries.
             MenuEntry singlePlayerMenuEntry = new MenuEntry(Resources.SinglePlayer);
-            MenuEntry systemLinkMenuEntry = new MenuEntry(Resources.SystemLink);
-            MenuEntry exitMenuEntry = new MenuEntry(Resources.Exit);
+            MenuEntry systemLinkMenuEntry   = new MenuEntry(Resources.SystemLink);
+            MenuEntry settingsMenuEntry     = new MenuEntry(Resources.Settings);
+            MenuEntry exitMenuEntry         = new MenuEntry(Resources.Exit);
 
             // Hook up menu event handlers.
             singlePlayerMenuEntry.Selected += SinglePlayerMenuEntrySelected;
-            systemLinkMenuEntry.Selected += SystemLinkMenuEntrySelected;
-            exitMenuEntry.Selected += OnCancel;
+            systemLinkMenuEntry.Selected   += SystemLinkMenuEntrySelected;
+            settingsMenuEntry.Selected     += SettingsMenuEntrySelected;
+            exitMenuEntry.Selected         += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(singlePlayerMenuEntry);
             MenuEntries.Add(systemLinkMenuEntry);
+            MenuEntries.Add(settingsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
 
             // Stop any background music
             MediaPlayer.Stop();
+        }
+
+        public override void LoadContent()
+        {
+            // Load a blank texture
+            blank = new Texture2D(AsteroidsGame.graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            blank.SetData(new[] { Color.White });
+
+            base.LoadContent();
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            ScreenManager screenManager = this.ScreenManager;
+            SpriteBatch   spriteBatch   = screenManager.SpriteBatch;
+
+            spriteBatch.Begin();
+            {
+                // Top
+                Helper.DrawLine(
+                    spriteBatch,
+                    blank,
+                    2,
+                    Color.White,
+                    new Vector2(420,50),
+                    new Vector2(850,50)
+                );
+
+                Helper.DrawLine(
+                    spriteBatch,
+                    blank,
+                    2,
+                    Color.White,
+                    new Vector2(420, 50),
+                    new Vector2(650, 550)
+                );
+
+                Helper.DrawLine(
+                    spriteBatch,
+                    blank,
+                    2,
+                    Color.White,
+                    new Vector2(650, 550),
+                    new Vector2(850, 50)
+                );
+            }
+            spriteBatch.End();
+
+            base.Draw(gameTime);
         }
 
         #endregion
@@ -61,6 +117,13 @@ namespace Asteroids
             LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen(null));
         }
 
+        /// <summary>
+        /// Event handler for when the Settings menu entry is selected.
+        /// </summary>
+        void SettingsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new SettingsScreen(), e.PlayerIndex);
+        }
 
         /// <summary>
         /// Event handler for when the Live menu entry is selected.

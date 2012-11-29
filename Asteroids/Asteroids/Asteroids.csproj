@@ -136,6 +136,7 @@
     <Compile Include="Screen\Network\NetworkErrorScreen.cs" />
     <Compile Include="Screen\Network\NetworkSessionComponent.cs" />
     <Compile Include="Screen\Network\ProfileSignInScreen.cs" />
+    <Compile Include="Screen\SettingsScreen.cs" />
     <Compile Include="Screen\TitleBackgroundScreen.cs" />
     <Compile Include="Screen\GameOverScreen.cs" />
     <Compile Include="Screen\GameplayScreen.cs" />

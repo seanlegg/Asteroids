@@ -42,7 +42,7 @@ namespace Asteroids
             GameWon,
         };
 
-        private const int updatesBetweenGameDataPackets   =  0; // Ensure asteroids are in the correct position every 5 seconds
+        private const int updatesBetweenGameDataPackets   =  0; // Ensure asteroids are in the correct position
         private const int updatesBetweenPlayerDataPackets = 60;
         private const int updatesBetweenStatusPackets     =  0;        
 

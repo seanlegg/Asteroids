@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
+using ProjectMercury;
+using ProjectMercury.Renderers;
+
 namespace Asteroids
 {
     public enum Mode
@@ -26,6 +29,19 @@ namespace Asteroids
 
         SoundEffect asteroid_hit;
         SoundEffect asteroid_hit_bullet;
+
+        #endregion
+
+        #region Particle Effects
+
+        // Particle System
+        Renderer particleRenderer;
+
+        // Particle States
+        private bool isThrustEnabled = false;
+
+        // Particle Effects
+        ParticleEffect explosionEffect;
 
         #endregion
 
@@ -66,6 +82,19 @@ namespace Asteroids
             {
                 Init();
             }
+
+            // Create Particle Renderer
+            particleRenderer = new SpriteBatchRenderer
+            {
+                GraphicsDeviceService = AsteroidsGame.graphics
+            };
+            particleRenderer.LoadContent(content);
+
+            // Load Particle Effects
+            explosionEffect = new ParticleEffect();
+            explosionEffect = content.Load<ParticleEffect>("effect/Explosion");
+            explosionEffect.LoadContent(content);
+            explosionEffect.Initialise();
         }
 
         public override void Init()
@@ -81,7 +110,7 @@ namespace Asteroids
             // Reset the Id
             currentId = 0;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));
                 Vector2 velocity = new Vector2((float) Math.Sin(rand.Next(0, n)), (float) Math.Cos(rand.Next(0, n)) );
@@ -108,6 +137,7 @@ namespace Asteroids
             currentId = 0;
 
             for (int i = 0; i < (level*5); i++)
+            //for (int i = 0; i < 20; i++)
             {
                 Vector2 position = new Vector2(rand.Next(0, w), rand.Next(0, h));     
                 Vector2 velocity = new Vector2((float)Math.Sin(rand.Next(0, level)), (float)Math.Cos(rand.Next(0, level)));
@@ -144,8 +174,13 @@ namespace Asteroids
             }
         }
 
-        public override void Update(GameTime dt)
+        public override void Update(GameTime gameTime)
         {
+            float dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Update Particles
+            explosionEffect.Update(dt);
+
             asteroids.ForEach(delegate(Asteroid a)
             {
                 if (a.isActive == false)
@@ -154,13 +189,20 @@ namespace Asteroids
                 }
                 else
                 {
-                    a.Update(dt);
+                    a.Update(gameTime);
                 }
             });
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            // Render explosion
+            spriteBatch.Begin();
+            {
+                particleRenderer.RenderEffect(explosionEffect);
+            }
+            spriteBatch.End();
+
             asteroids.ForEach(delegate(Asteroid a)
             {
                 a.Draw(spriteBatch);
@@ -214,6 +256,9 @@ namespace Asteroids
             // Let the player handle its collision with the asteroid
             p.HandleCollision(a);
 
+            // Trigger an explosion particle effect
+            explosionEffect.Trigger(a.Position);
+
             // Play a sound - (http://www.freesound.org/people/m_O_m/sounds/109073/)
             asteroid_hit.Play();
 
@@ -231,6 +276,9 @@ namespace Asteroids
 
             // Let the bullet handle its collision with the asteroid
             b.HandleCollision(a);
+
+            // Trigger an explosion particle effect
+            explosionEffect.Trigger(a.Position);
 
             // Play a sound - (http://www.freesound.org/people/m_O_m/sounds/117771/)
             asteroid_hit_bullet.Play();
